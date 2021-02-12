@@ -1,5 +1,4 @@
-document.write('<html><head>
-    <meta charset="UTF-8">
+document.write('<meta charset="UTF-8">
     <title>Camul Home Page</title>
     <style>
         .center {
@@ -17,5 +16,4 @@ document.write('<html><head>
     </style>
     <link rel="icon" href="https://www.freefavicon.com/freefavicons/animal/camel-152-237384.png">
       </head><body data-new-gr-c-s-check-loaded="14.995.0" data-gr-ext-installed="">
-        <h1 class="center">CAMUL's GAMES</h1>
-</body></html>')
+        <h1 class="center">CAMUL's GAMES</h1>')
