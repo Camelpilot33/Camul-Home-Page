@@ -1,0 +1,420 @@
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
+<script>/**/
+const config = {
+  type: Phaser.AUTO,
+  width: 600,
+  height: 600,
+  backgroundColor: 0x333333,
+  parent: "game-container",
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: false //eval(window.prompt("debug?"))
+    }
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update
+  }
+
+}
+const game = new Phaser.Game(config);
+function rowcreate(tilenum, length) {
+  var array = []
+  for (i = 0; i < length; i++) {
+    array.push(Math.floor(Math.random() * tilenum))
+  }
+  return array
+}
+function lvlcreate(tilenum, length) {
+  var array = []
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  array.push(rowcreate(tilenum, length))
+  return array
+}
+function makeStars(x, y, xVel, yVel){
+var Star = starsGroup.get();   //gets first inactive member
+if(!Star){return} //prevents an error if we've reached our max number
+Star.enableBody(true, x, y, true, true).setVelocity(xVel, yVel);  //activates the member
+  }
+function newMaze(x, y) {
+
+  // Establish variables and starting grid
+  var totalCells = x * y;
+  var cells = new Array();
+  var unvis = new Array();
+  for (var i = 0; i < y; i++) {
+    cells[i] = new Array();
+    unvis[i] = new Array();
+    for (var j = 0; j < x; j++) {
+      cells[i][j] = [0, 0, 0, 0];
+      unvis[i][j] = true;
+    }
+  }
+
+  // Set a random position to start from
+  var currentCell = [Math.floor(Math.random() * y), Math.floor(Math.random() * x)];
+  var path = [currentCell];
+  unvis[currentCell[0]][currentCell[1]] = false;
+  var visited = 1;
+
+  // Loop through all available cell positions
+  while (visited < totalCells) {
+    // Determine neighboring cells
+    var pot = [
+      [currentCell[0] - 1, currentCell[1], 0, 2],
+      [currentCell[0], currentCell[1] + 1, 1, 3],
+      [currentCell[0] + 1, currentCell[1], 2, 0],
+      [currentCell[0], currentCell[1] - 1, 3, 1]
+    ];
+    var neighbors = new Array();
+
+    // Determine if each neighboring cell is in game grid, and whether it has already been checked
+    for (var l = 0; l < 4; l++) {
+      if (pot[l][0] > -1 && pot[l][0] < y && pot[l][1] > -1 && pot[l][1] < x && unvis[pot[l][0]][pot[l][1]]) {
+        neighbors.push(pot[l]);
+      }
+    }
+
+    // If at least one active neighboring cell has been found
+    if (neighbors.length) {
+      // Choose one of the neighbors at random
+      next = neighbors[Math.floor(Math.random() * neighbors.length)];
+
+      // Remove the wall between the current cell and the chosen neighboring cell
+      cells[currentCell[0]][currentCell[1]][next[2]] = 1;
+      cells[next[0]][next[1]][next[3]] = 1;
+
+      // Mark the neighbor as visited, and set it as the current cell
+      unvis[next[0]][next[1]] = false;
+      visited++;
+      currentCell = [next[0], next[1]];
+      path.push(currentCell);
+    }
+    // Otherwise go back up a step and keep going
+    else {
+      currentCell = path.pop();
+    }
+  }
+  return cells;
+}
+var score = 0
+var scoretxt
+var input
+var title = true
+var pauseable = false
+var hsv = Phaser.Display.Color.HSVColorWheel();
+var q = 0
+var size = window.prompt("Size.\nHas to be an integer, 1-50\nGreater than 50 and frames drop")
+var time = 0
+
+function preload() {
+  this.load.image("tiles", 'https://i.imgur.com/RfzQnQ8.png');
+  this.load.image("sprite", 'https://i.imgur.com/FLD5icW.png')
+  this.load.image("lime", 'https://i.imgur.com/GjmByPc.png')
+  this.load.image("ver", 'https://i.imgur.com/mfyMBTz.png')
+  this.load.image("hor", 'https://i.imgur.com/x2XXmkt.png')
+  this.load.image("background", 'https://i.imgur.com/R3gOlQm.png')
+  this.load.image("camul", 'https://i.imgur.com/HdTQa1L.png')
+  this.load.image("splat", 'https://i.imgur.com/Jot7yqR.png')
+  this.load.image("button", 'https://i.imgur.com/dkt9AeI.png')
+  this.load.image("white", 'https://i.imgur.com/EHP0K9x.png')
+}
+
+function create() {
+window.alert("Welcome to a game made by a Camul and a Lime.")
+window.alert("Use WASD, space to pause, or you can point and click with your mouse.")
+window.alert("Have Fun!!")
+  bg = this.physics.add.image(50, 50, 'background').setScale(20).setSize(4, 4)
+  //const level1 = lvlcreate(4,13)
+  //const map = this.make.tilemap({ data: level1, tileWidth: 16, tileHeight: 16 });
+  //const tiles = map.addTilesetImage("tiles");
+  //layer = map.createDynamicLayer(0, tiles, 0, 0).setScale(3)
+  //scoretxt = this.add.text(20, 20, 'Score: '+score, { fontSize: '16px', fill: '#FFFFF' });
+  sprite = this.physics.add.sprite(50, 50, 'sprite').setScale(0.9)
+  camul = this.physics.add.sprite(-100, -100, 'camul').setScale(0.2)
+  killer = this.physics.add.overlap(sprite, camul, function() {
+    sprite.disableBody(true, true)
+    bg.disableBody(true, false)
+    emitter0.stop()
+  })
+  W = this.input.keyboard.addKey('W');
+pause = this.input.keyboard.addKey('space');
+  S = this.input.keyboard.addKey('S');
+  A = this.input.keyboard.addKey('A');
+  D = this.input.keyboard.addKey('D');
+  maze = this.physics.add.staticGroup()
+  col = this.physics.add.collider(sprite, maze);
+this.input.keyboard.createCombo([
+38, 38, 40, 40, 37, 39, 37, 39, 66, 65, 13
+], { resetOnMatch: true });
+this.input.keyboard.on('keycombomatch', function (event) {
+   switch(window.prompt("Hax:\n(1)wallhax\n(2)Forcefield")) {
+      case "1":
+      col.destroy();
+      window.alert("Wallhacks Enabled")
+        break
+      case "2":
+      killer.destroy();
+        window.alert("Forcefield Enabled")
+      break
+      default:
+      window.alert("ENTER 1 or 2\nERROR")
+      window.alert("HAX DETECTED")
+      window.alert("Banning")
+      window.alert("Banned. Do not reconnect")
+sprite.destroy()
+      }
+});
+
+  function wall(x, y, side) {
+    var coords = [x * 100 - 50, y * 100 - 50]
+    if (side[0] == 0) maze.create(coords[0], coords[1] - 50, 'hor').refreshBody()
+    if (side[1] == 0) maze.create(coords[0] + 50, coords[1], 'ver').refreshBody()
+    if (side[2] == 0) maze.create(coords[0], coords[1] + 50, 'hor').refreshBody()
+    if (side[3] == 0) maze.create(coords[0] - 50, coords[1], 'ver').refreshBody()
+  }
+  //cunstruction
+  var total = newMaze(size, size)
+  for (var w in total) {
+    var row = total[w]
+    for (var r in row) {
+      var cell = row[r]
+      wall(parseInt(r) + 1, parseInt(w) + 1, cell)
+    }
+  }
+
+  goal1 = this.physics.add.sprite(size * 100 - 50, size * 100 - 50, 'lime').setScale(3)
+  goal2 = this.physics.add.sprite(50, size * 100 - 50, 'lime').setScale(3)
+  goal3 = this.physics.add.sprite(size * 100 - 50, 50, 'lime').setScale(3)
+  this.physics.add.overlap(sprite, goal1, function() {
+    goal1.disableBody(true, true)
+    score += 1
+    emitter1.start(true, 2000, null, 10);
+  })
+  this.physics.add.overlap(sprite, goal2, function() {
+    goal2.disableBody(true, true)
+    score += 1
+    emitter2.start(true, 2000, null, 10);
+  })
+  this.physics.add.overlap(sprite, goal3, function() {
+    goal3.disableBody(true, true)
+    score += 1
+    emitter3.start(true, 2000, null, 10);
+  })
+  cursor = this.add.image(0, 0, 'cursor').setOrigin(0, 0).setVisible(false)
+
+  scoretxt = this.add.text(0, -100, 'Score: 0', {
+    fontSize: '64px',
+    fill: '#F4f'
+  });
+  this.physics.world.enable(scoretxt)
+  this.physics.add.collider(bg, maze);
+  this.cameras.main.startFollow(sprite).setZoom(0.5)
+
+  input = this.input.mousePointer
+
+  starsGroup = this.physics.add.group({
+    key: 'splat',  //use keyword you used for the picture you'd like for each group member
+    quantity: 20, //this makes copies of that picture.
+    maxSize: 20, //this is the max size the group can be
+    active: false, //makes group non-interactive when first made
+    visible: false, //makes the group invisible when it's first made
+    enable: false, //disables objects from scene when first created
+    bounceX: 0.5, //sets a horizontal bounce
+    bounceY: 1, //sets vertical bounce
+    gravityY: 100, // sets vertical gravity
+tint: 0x0000FF,
+setScale: { x: 0.5, y: 0.5}
+
+ })
+function collectStar(player, star){
+  star.disableBody(true, true);
+}
+this.physics.add.collider(maze, starsGroup, collectStar)
+  //this.physics.add.overlap(sprite, particles, collectStar);
+
+  particles = this.add.particles('splat');
+  emitter = particles.createEmitter({
+    speed: 50,
+    scale: {
+      start: 1,
+      end: 0
+    },
+    blendMode: 'ADD',
+    tint: 0xFF0000,
+    lifespan: 3000,
+    quantity: 0.001
+  });
+  emitter0 = particles.createEmitter({
+    speed: 50,
+    alpha: {
+      start: 1,
+      end: 0
+    },
+    scale: {
+      start: 1,
+      end: 0
+    },
+    blendMode: 'ADD',
+    tint: 0x1111FF,
+    lifespan: 3000,
+    quantity: 0.001
+  });
+  emitter1 = particles.createEmitter({
+    speed: 100,
+    scale: {
+      start: 1,
+      end: 0
+    },
+    blendMode: 'ADD',
+    tint: 0xf5a742,
+    lifespan: 1000,
+    gravityY: 50,
+    maxParticles: 10
+  });
+  emitter2 = particles.createEmitter({
+    speed: 100,
+    scale: {
+      start: 1,
+      end: 0
+    },
+    blendMode: 'ADD',
+    tint: 0xf5a742,
+    lifespan: 1000,
+    gravityY: 50,
+    maxParticles: 10
+  });
+  emitter3 = particles.createEmitter({
+    speed: 100,
+    scale: {
+      start: 1,
+      end: 0
+    },
+    blendMode: 'ADD',
+    tint: 0xf5a742,
+    lifespan: 1000,
+    gravityY: 50,
+    maxParticles: 10
+  });
+  emitter.startFollow(camul).setFrequency(400, 1).pause()
+  emitter0.startFollow(sprite).setFrequency(400, 1).pause()
+  emitter1.startFollow(goal1).stop()
+  emitter2.startFollow(goal2).stop()
+  emitter3.startFollow(goal3).stop()
+  ts = this.physics.add.image(50, 50, "white").setScale(2000).setTint(0x445566)
+  tstxt = this.add.text(-400, -400, 'CamuLime Maze', {
+    fontSize: '128px',
+    fill: '#FFFFFF'
+  })
+  pstxt = this.add.text(-200, -400, 'Paused\n  ||', {
+    fontSize: '128px',
+    fill: '#FFFFFF'
+  }).setAlpha(0)
+  Button = this.physics.add.image(50, 50, 'button').setScale(1).setInteractive()
+  Button.on('pointerover', function() {
+    Button.setTint(0x555555);
+  }, this)
+  Button.on('pointerout', function() {
+    Button.setTint(0xffffff);
+  }, this)
+  Button.on('pointerdown', function() {
+    ts.setAlpha(0)
+    tstxt.destroy();
+    Button.destroy();
+    title = false
+pauseable = true
+  })
+}
+
+function update() {
+  var tint = hsv[q]
+  q++;
+  if (q === hsv.length) {
+    q = 0;
+  }
+  tstxt.setTint(tint.color);
+if (pause.isDown && pauseable == true) {
+title = true
+camul.setVelocity(0,0)
+sprite.setVelocity(0,0)
+bg.setVelocity(0,0)
+ts.setAlpha(0.5).setTint(0x000000)
+    ts.x = sprite.x
+    ts.y = sprite.y
+    pstxt.x = sprite.x-230
+    pstxt.y = sprite.y-500
+    pstxt.setAlpha(1).setTint(0x00FF00)
+} else if (pauseable == true) {
+title = false
+    ts.setAlpha(0)
+    pstxt.setAlpha(0)
+}
+
+  if (title == false) {
+time += 1
+if (Math.floor(time)%30 == 2)makeStars(sprite.x,sprite.y, Math.random()*200-100, -100)
+    emitter.resume()
+    emitter0.resume()
+    scoretxt.setText('Score: ' + score)
+    //emitter.setPosition(camul.x, camul.y);
+    cursor.x = input.x - 300 + sprite.x
+    cursor.y = input.y - 300 + sprite.y
+
+    scoretxt.x = sprite.x - 150
+    scoretxt.y = sprite.y - 200
+
+    var a = sprite.x - cursor.x
+    var b = sprite.y - cursor.y
+    var c = Math.sqrt(a * a + b * b);
+    var a1 = sprite.x - bg.x
+    var b1 = sprite.y - bg.y
+    var c1 = Math.sqrt(a * a + b * b);
+    if (input.isDown) {
+      this.physics.moveToObject(sprite, cursor, c * 3);
+      //this.physics.moveToObject(bg, cursor, c*3);
+    } else {
+      sprite.body.velocity.x = 0
+      sprite.body.velocity.y = 0
+    }
+    if (A.isDown) sprite.body.setVelocityX(-500);
+    if (D.isDown) sprite.body.setVelocityX(500);
+    if (S.isDown) sprite.body.setVelocityY(500);
+    if (W.isDown) {
+      sprite.body.setVelocityY(-500);
+    }
+    //if (!(S.isDown || W.isDown)) sprite.body.setVelocityY(0)
+    //if (!(A.isDown || D.isDown)) sprite.body.setVelocityX(0)
+    bg.body.velocity.x = sprite.body.velocity.x
+    bg.body.velocity.y = sprite.body.velocity.y
+    if (c1 > 2) {
+      bg.x = sprite.x
+      bg.y = sprite.y
+    }
+    if (score < 3) this.physics.moveToObject(camul, sprite, 50);
+    else {
+      scoretxt.setText("YOU WIN")
+    }
+    let angle = Phaser.Math.Angle.Between(camul.x, camul.y, sprite.x, sprite.y);
+    camul.setRotation(angle);
+
+    if (camul.rotation > 1.5 || camul.rotation < -1.5) camul.flipY = true
+    else camul.flipY = false
+  }
+}
+/**/</script>
