@@ -1,0 +1,327 @@
+<html><head>
+    <meta charset="UTF-8">
+    <title>Camul Home Page</title>
+    <style>
+        .center {
+          margin: auto;
+          width: 60%;
+          border: 3px solid #73AD21;
+          padding: 10px;
+        }
+      </style>
+    <style>*{margin:5;}</style>
+    <style>
+        h1 {text-align: center;}
+        submit {text-align: center;}
+        p {text-align: center;}
+    </style>
+    <link rel="icon" href="https://www.freefavicon.com/freefavicons/animal/camel-152-237384.png">
+      </head><body data-new-gr-c-s-check-loaded="14.995.0" data-gr-ext-installed="">
+        <h1 class="center">CAMUL's GAMES</h1>
+        <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser.js"></script>
+        <script>
+        const config = {
+  type: Phaser.AUTO,
+  width: 600,
+  height: 600,
+  backgroundColor: 0x333333,
+  physics: {
+        default: 'arcade',
+        arcade: { 
+				//gravity: { y: 500 }, //dont turn on
+				debug:true//eval(window.prompt("debug?")) 
+				}
+				
+    },
+  scene: {
+    create,
+    update,
+    preload
+  }
+}
+const game = new Phaser.Game(config);
+const gameState = { 
+     onColor: 0xFFFFFF,
+     offColor: 0x000000,
+  } //onColor, offColor
+var scoreText;
+var score = 0;
+var win
+var lose
+var time = 0
+var cp = [50, 50]// last ceckpoint
+var i
+var power = 5*60
+var cooldown = false
+var powertxt
+var foot = 0
+function preload() {
+	this.load.image('platform','https://img.pngio.com/platform-png-91-images-in-collection-page-2-platform-png-800_180.png')
+	this.load.image('sprite','https://i.imgur.com/MB4aLyW.png')
+	this.load.image('blank','https://i.imgur.com/gXKerAK.png')
+	this.load.image('coin', 'https://i.imgur.com/OkEueYg.png')
+	this.load.image("sprite1",'https://i.imgur.com/wwjcN5l.png')
+	this.load.image("sprite2",'https://i.imgur.com/SYBMGDC.png')
+	this.load.image("sprite3",'https://i.imgur.com/um9hAmF.png')
+	this.load.image("sprite4",'https://i.imgur.com/arYIbmj.png')
+	//this.load.image('animcoin','https://i.imgur.com/YoJmMH3.png')//failed
+} //Background, sprite
+function create() {
+	//text
+	powertxt = this.add.text(0, 100, 'Power: '+power, { fontSize: '32px', fill: '#00ff00' });
+	lose = this.add.text(-1000, -1000, 'YOU LOSE!', { fontSize: '32px', fill: '#FF0000' });
+	win = this.add.text(-1000, -1000, 'YOU WIN!', { fontSize: '32px', fill: '#d4af37' });
+	timetxt = this.add.text(0, 0, 'Time: '+time/60, { fontSize: '32px', fill: '#FF0000' });
+	var title = this.add.text(100, 0, 'CAMUL Platformer\nArrow keys to move', { fontSize: '64px', fill: '#03fc07' }); // maybe add a timer for racing
+	var text = this.add.text(1000, -50, 'Collect 100 points to win!\n1 Coin = 20 points\n1 Death = -10 points\nBeat as quick as possible', {fontSize: '20px', fill: '#c4ffc5' });
+	scoreText = this.add.text(100, 100, 'Score: 0', { fontSize: '32px', fill: '#F4f' });
+	//coins = this.physics.add.staticGroup()
+	coin1 = this.physics.add.image(300+5, 250, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+	coin2 = this.physics.add.image(500+5, 250, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+	
+	
+	gameState.sprite = this.physics.add.sprite(50, 50, 'sprite').setScale(3).setCollideWorldBounds(false).setGravityY(600)
+	gameState.sprite1 = this.physics.add.sprite(50, 400, 'platform').setCollideWorldBounds(true).setImmovable().setScale(0.1)
+gameState.ground = this.physics.add.image(290,580,'platform').setScale(0.8).setImmovable().setSize(1000, 70).setOffset(30,40)
+this.physics.add.collider(gameState.sprite, gameState.ground)
+//coin col
+this.physics.add.overlap(gameState.sprite, coin1, function() {
+			coin1.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+	});
+this.physics.add.overlap(gameState.sprite, coin2, function() {
+			coin2.disableBody(true, true)
+			score += 20; //set 2 80 to debug
+    	scoreText.setText('Score: ' + score);
+	});
+//platforms
+gameState.plat1 = this.physics.add.image(300,300,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat1);
+gameState.plat2 = this.physics.add.image(400,200,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat2);
+gameState.plat3 = this.physics.add.image(500,300,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat3);
+gameState.plat4 = this.physics.add.image(850,300,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat4);
+gameState.plat5 = this.physics.add.image(1000,300,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat5);
+gameState.plat6 = this.physics.add.image(1200,200,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat6);
+gameState.plat7 = this.physics.add.image(1200,50,'platform').setScale(0.1).setImmovable()
+this.physics.add.collider(gameState.sprite, gameState.plat7);
+//generated
+var platxy = [1300, 50]
+//lvl1
+for (i=8; i<10; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin3 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+cp1 = this.physics.add.image(coin3.x,coin3.y +125, 'blank').setScale(5).setSize(10,10).setOffset(47,27)
+	this.physics.add.overlap(gameState.sprite, cp1, function() {
+		cp = [cp1.x,cp1.y]
+		cp1.disableBody(true, false)
+		power += 120
+	})
+	this.physics.add.overlap(gameState.sprite, coin3, function() {
+			coin3.disableBody(true, true)
+			score += 20;
+
+	});
+//lvl2
+for (i=8; i<15; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin4 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150).setTint(0xFFFFFF)
+	this.physics.add.overlap(gameState.sprite, coin4, function() {
+			coin4.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+
+	});
+//lvl3
+for (i=8; i<20; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin5 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+cp2 = this.physics.add.image(coin5.x,coin5.y +125, 'blank').setScale(5).setSize(10,10).setOffset(47,27)
+	this.physics.add.overlap(gameState.sprite, cp2, function() {
+		cp = [cp2.x,cp2.y]
+		cp2.disableBody(true, false)
+		power += 120
+	})
+	this.physics.add.overlap(gameState.sprite, coin5, function() {
+			coin5.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+
+	});
+//lvl4
+for (i=8; i<20; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin6 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+	this.physics.add.overlap(gameState.sprite, coin6, function() {
+			coin6.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+
+	});
+	//lvl5
+	for (i=0; i<20; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin7 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+cp3 = this.physics.add.image(coin7.x,coin7.y +125, 'blank').setScale(5).setSize(10,10).setOffset(47,27)
+	this.physics.add.overlap(gameState.sprite, cp1, function() {
+		cp = [cp3.x,cp3.y]
+		cp3.disableBody(true, false)
+		power += 120
+	})
+	this.physics.add.overlap(gameState.sprite, coin7, function() {
+			coin7.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+	});
+	//lvl6
+	for (i=0; i<20; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin8 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+	this.physics.add.overlap(gameState.sprite, coin8, function() {
+			coin8.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+	});
+	//lvl7
+	for (i=0; i<20; i++) {
+	gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+	platxy = [gameState[i].x + 200, gameState[i].y + Math.floor(Math.random() * 200)-100]
+}
+coin9 = this.physics.add.image(platxy[0]+5,platxy[1]-70, 'coin').setScale(0.2).setSize(200,200).setOffset(190,150)
+	this.physics.add.overlap(gameState.sprite, coin9, function() {
+			coin9.disableBody(true, true)
+			score += 20;
+    	scoreText.setText('Score: ' + score);
+	});
+
+
+
+gameState[i] = this.physics.add.image(platxy[0],platxy[1],'platform').setScale(0.1).setImmovable()
+	this.physics.add.collider(gameState.sprite, gameState[i]);
+
+	//gameState.rect1 = this.add.rectangle(100, 200, 50, 50, gameState.onColor);
+	//gameState.rect2 = this.add.rectangle(100, 500, 50, 50, gameState.offColor);
+	
+	this.physics.add.collider(gameState.sprite, gameState.sprite1);
+	
+	//gameState.rect1.setInteractive();
+	//gameState.rect2.setInteractive();
+	gameState.sprite.setInteractive();
+	/*
+	gameState.rect2.on('pointerup', function(){
+      gameState.rect1.fillColor = gameState.offColor;
+      gameState.rect2.fillColor = gameState.onColor
+  } );
+	gameState.rect2.on('pointerover', function(){
+      gameState.rect2.fillColor = gameState.offColor;
+      gameState.rect1.fillColor = gameState.onColor
+  } );*/
+  gameState.cursors = this.input.keyboard.createCursorKeys();
+    // the player will collide with this layer
+		camera = this.cameras.main;
+	this.physics.world.bounds.height = 550
+	camera.startFollow(gameState.sprite);
+	camera.setZoom(1)
+	//gameState.sprite.body.setCircle(8, 40, 30);
+	gameState.sprite.setBodySize(10, 18).setOffset(43,30)
+}
+function update() {
+	// update txt
+  scoreText.setText('Score: ' + score);
+	timetxt.setText("Time: " + Math.floor(time/60));
+	//cursors
+	foot += 1
+	if(gameState.cursors.left.isDown){
+  	gameState.sprite.body.setVelocityX(-200);
+		gameState.sprite.flipX = true
+		gameState.sprite.setOffset(47,30)
+		if(gameState.sprite.body.onFloor() || gameState.sprite.body.touching.down) {
+			if(Math.floor(foot/20)%2 == 0) 	gameState.sprite.setTexture('sprite1') 
+			if(Math.floor(foot/20)%2 == 1) 	gameState.sprite.setTexture('sprite2') 
+		} else gameState.sprite.setTexture('sprite')
+  }else if(gameState.cursors.right.isDown){
+  	gameState.sprite.body.setVelocityX(200);
+		gameState.sprite.flipX = false
+		gameState.sprite.setOffset(43,30)
+		if(gameState.sprite.body.onFloor() || gameState.sprite.body.touching.down) {
+			if(Math.floor(foot/20)%2 == 0) 	gameState.sprite.setTexture('sprite1') 
+			if(Math.floor(foot/20)%2 == 1) 	gameState.sprite.setTexture('sprite2') 
+		} else gameState.sprite.setTexture('sprite')
+  }else { //idle
+		gameState.sprite.body.setVelocityX(0);
+		gameState.sprite.setTexture('sprite')
+	}
+  if(gameState.cursors.up.isDown && (gameState.sprite.body.onFloor() || gameState.sprite.body.touching.down)){
+        gameState.sprite.body.setVelocityY(-450); // jump up
+   }
+	 
+	if (!(gameState.sprite.body.onFloor() || gameState.sprite.body.touching.down))
+	{
+	if (gameState.sprite.body.velocity.y >= 0) gameState.sprite.setTexture("sprite3") 
+	else
+	gameState.sprite.setTexture("sprite4")
+	} 
+	  	
+	 //cursor down
+	 powertxt.setText("Power: " + Math.floor(power));
+	 if(gameState.cursors.down.isDown && power > 0) {
+	 		gameState.sprite.body.setVelocityY(150)
+			gameState.sprite.setTexture('sprite3')
+			power -= 1
+	 } //glide⩗, instakill⨉, fastfall?⨉
+	 
+	 scoreText.x = gameState.sprite.x -100
+	 scoreText.y = gameState.sprite.y -100
+	 timetxt.x = gameState.sprite.x -100
+	 timetxt.y = gameState.sprite.y - 130
+	 powertxt.x = gameState.sprite.x -270
+	 powertxt.y = gameState.sprite.y - 270
+	 if (score < 100) {
+	 		time += 1
+	 }
+	 if (score >= 100) {
+	 		gameState.sprite.setTint(0xd4af37);
+			win.x = gameState.sprite.x -100
+			win.y = gameState.sprite.y -160
+	 } else if (gameState.sprite.body.velocity.y > 1000 || time/60 >= 120) {
+			if (score > 0) {
+				score -= 10
+				
+				console.log(score)
+			}
+			gameState.sprite.setTint(0xFF0000);
+			gameState.sprite.x = cp[0]
+			gameState.sprite.y = cp[1] - 100
+			gameState.sprite.body.velocity.y = 0
+			this.cameras.main.shake()
+	 } else {
+	 		gameState.sprite.setTint(0xFFFFFF);
+	 }
+}//update is called 60x per second (or less if computer cant handle it)
+
+        </script>
+</body></html>
