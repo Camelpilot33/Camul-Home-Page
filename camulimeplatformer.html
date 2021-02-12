@@ -1,0 +1,66 @@
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
+
+<script>
+const config = {
+  type: Phaser.AUTO,
+  width: 500,
+  height: 500,
+  backgroundColor: 0x7777FF,
+  parent: "game-container",
+  physics: {
+    default: 'arcade',
+    arcade: {
+      debug: true, //eval(window.prompt("debug?")) 
+      //gravity: {y:650}
+    }
+  },
+  scene: {
+    preload: preload,
+    create: create,
+    update: update
+  }
+}
+const game = new Phaser.Game(config);
+function preload() {
+  this.load.spritesheet('camul', 'https://i.imgur.com/tmyUnnq.png', { frameWidth: 42.66666666666666667, frameHeight: 42.625});
+	 this.load.image('platform', 'https://i.imgur.com/oiNCrvZ.png');
+
+}
+function create() {
+		W = this.input.keyboard.addKey('W');
+	  S = this.input.keyboard.addKey('S');
+ 		A = this.input.keyboard.addKey('A');
+ 		D = this.input.keyboard.addKey('D');
+  this.anims.create({
+ 		key: 'left',
+ 		frames: this.anims.generateFrameNumbers('camul', { start: 12, end: 14 }),
+ 		frameRate: 10,
+		repeat: -1
+	});
+  window.camul = this.physics.add.sprite(100, 100, 'camul').setInteractive().play('left').setGravityY(500)
+	plats = this.physics.add.staticGroup()
+	plats.create(100, 200, 'platform').setScale(5).refreshBody()
+	this.physics.add.collider(window.camul,plats)
+	this.cameras.main.startFollow(window.camul)
+}
+function update(){
+		if (A.isDown) {
+      window.camul.flipX = false
+      window.camul.anims.resume()
+			window.camul.setVelocityX(-200)
+    }
+    if (D.isDown) {
+      window.camul.flipX = true
+      window.camul.anims.resume()
+			window.camul.setVelocityX(200)
+    }
+    if (!(window.camul.body.touching.down)) window.camul.anims.pause(window.camul.anims.currentAnim.frames[0])
+    if (W.isDown && window.camul.body.touching.down) {window.camul.body.setVelocityY(-300);}
+    if (!(A.isDown || D.isDown)) {
+    	window.camul.body.setVelocityX(0)
+      window.camul.anims.pause(window.camul.anims.currentAnim.frames[12])
+    } else {window.camul.anims.resume()}
+
+}
+</script>
+<!-- I will do that-->
