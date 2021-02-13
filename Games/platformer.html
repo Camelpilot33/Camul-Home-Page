@@ -8,7 +8,10 @@
   type: Phaser.AUTO,
   width: 600,
   height: 600,
-  autoCenter: true,
+  scale: {
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
   backgroundColor: 0x333333,
   physics: {
         default: 'arcade',
