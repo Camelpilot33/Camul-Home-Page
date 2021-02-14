@@ -30,7 +30,7 @@ const config = {
 const game = new Phaser.Game(config);
 function preload() {
   this.load.spritesheet('camul', 'https://i.imgur.com/tmyUnnq.png', { frameWidth: 42.66666666666666667, frameHeight: 42.625});
-	 this.load.image('platform', 'https://i.imgur.com/oiNCrvZ.png');
+	 this.load.image('platform', 'https://i.imgur.com/VaUmAd3.png');
 
 }
 function create() {
@@ -44,9 +44,12 @@ function create() {
  		frameRate: 10,
 		repeat: -1
 	});
-  window.camul = this.physics.add.sprite(100, 100, 'camul').setInteractive().play('left').setGravityY(500)
+  window.camul = this.physics.add.sprite(0, 100, 'camul').setInteractive().play('left').setGravityY(500)
 	plats = this.physics.add.staticGroup()
-	plats.create(100, 200, 'platform').setScale(5).refreshBody()
+	function plat(x,y) {
+		plats.create(x, y,"platform").setScale(0.3).refreshBody().setSize(230, 30)
+	}
+	plat(0,200)
 	this.physics.add.collider(window.camul,plats)
 	this.cameras.main.startFollow(window.camul)
 }
@@ -61,13 +64,14 @@ function update(){
       window.camul.anims.resume()
 			window.camul.setVelocityX(200)
     }
-    if (!(window.camul.body.touching.down)) window.camul.anims.pause(window.camul.anims.currentAnim.frames[0])
+    if (!(window.camul.body.touching.down)) window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
     if (W.isDown && window.camul.body.touching.down) {window.camul.body.setVelocityY(-300);}
     if (!(A.isDown || D.isDown)) {
     	window.camul.body.setVelocityX(0)
-      window.camul.anims.pause(window.camul.anims.currentAnim.frames[12])
+      window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
     } else {window.camul.anims.resume()}
 
 }
 </script>
-</body></html>
+</body>
+</html>
