@@ -28,9 +28,14 @@ const config = {
   }
 }
 const game = new Phaser.Game(config);
+var title = true
+var hsv = Phaser.Display.Color.HSVColorWheel();
+var q = 0
 function preload() {
-  this.load.spritesheet('camul', 'https://i.imgur.com/tmyUnnq.png', { frameWidth: 42.66666666666666667, frameHeight: 42.625});
+  this.load.spritesheet('camul', 'https://i.imgur.com/tmyUnnq.png', { frameWidth: 42.66666666666666666666667, frameHeight: 42.625});
 	 this.load.image('platform', 'https://i.imgur.com/VaUmAd3.png');
+	 this.load.image("button", 'https://i.imgur.com/dkt9AeI.png')
+	 this.load.image('tick','https://i.imgur.com/oAPJ5A2.png')
 
 }
 function create() {
@@ -45,15 +50,59 @@ function create() {
 		repeat: -1
 	});
   window.camul = this.physics.add.sprite(0, 100, 'camul').setInteractive().play('left').setGravityY(500)
+	tick = this.physics.add.sprite(-300,0,'tick')
+	this.physics.add.collider(camul,tick,function(){camul.disableBody(true,true)})
 	plats = this.physics.add.staticGroup()
 	function plat(x,y) {
-		plats.create(x, y,"platform").setScale(0.3).refreshBody().setSize(230, 30)
+		plats.create(x, y,"platform").setScale(0.2).refreshBody().setSize(150, 20)
 	}
+	//0,200
 	plat(0,200)
+	plat(150,100)
+	plat(0,0)
+	plat(250,-100)
+	
+	
+	
 	this.physics.add.collider(window.camul,plats)
 	this.cameras.main.startFollow(window.camul)
+	this.cameras.main.setZoom(1)
+	ts = this.add.rectangle(0, 100, 600,700,0x055555)//.setScale(2000).setTint(0x445566)
+	tstxt = this.add.text(-230, 0, 'CamuLime Platformer', {
+    fontSize: '40px',
+    fill: '#FFFFFF'
+  })
+  Button = this.physics.add.image(0, 200, 'button').setScale(0.5).setInteractive()
+  Button.on('pointerover', function() {
+    Button.setTint(0x555555);
+  }, this)
+  Button.on('pointerout', function() {
+    Button.setTint(0xffffff);
+  }, this)
+  Button.on('pointerdown', function() {
+    ts.setAlpha(0)
+    tstxt.destroy();
+    Button.destroy();
+    title = false
+  })
+
 }
 function update(){
+	if (title == true){
+	var tint = hsv[q]
+  q++;
+  if (q === hsv.length) {
+    q = 0;
+  }
+	
+  tstxt.setTint(tint.color);
+	window.camul.setVelocityY(-8.333333333333333215)
+	window.camul.y=100
+	}
+		if(title != true){
+		this.physics.moveToObject(tick,window.camul,30)
+		let angle = Phaser.Math.Angle.Between(tick.x, tick.y, window.camul.x, window.camul.y);
+    tick.setRotation(angle+1.5);
 		if (A.isDown) {
       window.camul.flipX = false
       window.camul.anims.resume()
@@ -65,12 +114,15 @@ function update(){
 			window.camul.setVelocityX(200)
     }
     if (!(window.camul.body.touching.down)) window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
-    if (W.isDown && window.camul.body.touching.down) {window.camul.body.setVelocityY(-300);}
+    if (W.isDown && window.camul.body.touching.down) {window.camul.body.setVelocityY(-350);}
     if (!(A.isDown || D.isDown)) {
     	window.camul.body.setVelocityX(0)
       window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
     } else {window.camul.anims.resume()}
-
+		
+	}
+	//detect death
+	if(window.camul.body.velocity.y > 1000) window.camul.disableBody(true,true)
 }
 </script>
 </body>
