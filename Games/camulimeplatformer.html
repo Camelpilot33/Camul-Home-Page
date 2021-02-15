@@ -33,6 +33,13 @@ var title = true
 var hsv = Phaser.Display.Color.HSVColorWheel();
 var q = 0
 var score = 0
+//HighScore initiation ----------
+const SAVEKEY = "highscore"
+var scoreHigh = localStorage.getItem(SAVEKEY)
+var scoreSTR = localStorage.getItem(SAVEKEY)
+if (scoreSTR == null)scoreHigh = 0
+else scoreHigh = parseInt(scoreSTR)
+//load assets ----------
 function preload() {
   this.load.spritesheet('camul', 'https://i.imgur.com/tmyUnnq.png', { frameWidth: 42.66666666666666666666667, frameHeight: 42.625});
 	 this.load.image('platform', 'https://i.imgur.com/VaUmAd3.png');
@@ -70,7 +77,7 @@ function create() {
 		if (window.prompt(riddles[rand][0]) == riddles[rand][1]) {
 			lime1.disableBody(true,true)
 			bar1.disableBody(true,true)
-			score += 1
+			score += 40
 		}
 		else {
 			window.camul.disableBody(true,true)
@@ -118,12 +125,16 @@ function update(){
   if (q === hsv.length) {
     q = 0;
   }
-	
   tstxt.setTint(tint.color);
 	window.camul.setVelocityY(-8.333333333333333215)
 	window.camul.y=100
 	}
 		if(title != true){
+		//highScore
+		if (score > scoreHigh) {
+			scoreHigh = score
+			localStorage.setItem(SAVEKEY,scoreHigh)
+		}
 		let angle = Phaser.Math.Angle.Between(tick.x, tick.y, window.camul.x, window.camul.y);
     tick.setRotation(angle+1.5)
 		this.physics.moveToObject(tick,window.camul,20)
@@ -149,3 +160,4 @@ function update(){
 	if(window.camul.body.velocity.y > 1000) window.camul.disableBody(true,true)
 }
 </script>
+</body></html>
