@@ -4,6 +4,7 @@
 <center><button onclick="localStorage.clear()">Reset High Score</button>
 <h3 style="color:red;">This game is in a development stage<h3></center>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
+
 <script>
 const config = {
   type: Phaser.AUTO,
@@ -22,6 +23,9 @@ const config = {
       //gravity: {y:650}
     }
   },
+	audio: {
+        disableWebAudio: true
+    },
   scene: {
     preload: preload,
     create: create,
@@ -47,12 +51,16 @@ function preload() {
 	 this.load.image('tick','https://i.imgur.com/oAPJ5A2.png')
 	 this.load.image("lime", 'https://i.imgur.com/GjmByPc.png')
 	 this.load.image("barrier",'https://i.imgur.com/69npiyO.png')
+	 this.load.audio("bgsound",'https://bigsoundbank.com/UPLOAD/mp3/0100.mp3')
+	 this.load.audio("collect",'https://camelpilot33.github.io/Camul-Home-Page/Audio/CoinCollect.wav')
 }
 function create() {
 		W = this.input.keyboard.addKey('W');
 	  S = this.input.keyboard.addKey('S');
  		A = this.input.keyboard.addKey('A');
  		D = this.input.keyboard.addKey('D');
+	 //var music = this.sound.add('bgsound').play();
+	 collect = this.sound.add('collect')
   this.anims.create({
  		key: 'left',
  		frames: this.anims.generateFrameNumbers('camul', { start: 12, end: 14 }),
@@ -78,6 +86,7 @@ function create() {
 			lime1.disableBody(true,true)
 			bar1.disableBody(true,true)
 			score += 40
+			collect.play()
 		}
 		else {
 			window.camul.disableBody(true,true)
@@ -156,7 +165,7 @@ function update(){
     } else {window.camul.anims.resume()}
 		
 	}
-	//detect fall death
+	//detect death
 	if(window.camul.body.velocity.y > 1000) window.camul.disableBody(true,true)
 }
 </script>
