@@ -19,7 +19,7 @@ const config = {
   physics: {
     default: 'arcade',
     arcade: {
-      debug: true, //eval(window.prompt("debug?")) 
+      debug: false, //eval(window.prompt("debug?")) 
       //gravity: {y:650}
     }
   },
@@ -67,12 +67,7 @@ function create() {
  		A = this.input.keyboard.addKey('A');
  		D = this.input.keyboard.addKey('D');
 		//AUDIO ------------------------
-	 music = this.sound.add('bgsound',{
-    mute: false,
-    volume: 0.5,
-    loop: true,
-    delay: 0
-}).play();
+	 bgmusic = this.sound.add('bgsound')//.play();
 	 collect = this.sound.add('collect')
 	 jump = this.sound.add('jump')
 	 thump = this.sound.add("thump")
@@ -118,10 +113,16 @@ function create() {
 	plat(250,-100)
 	plat(500, -100)
 	plat(650, -100)
+	plat(650, -300)
 	bar1 = plats.create(600, -200, 'barrier').setScale(10).refreshBody()
 	lime1 = this.physics.add.sprite(500, -200,'lime').setScale(3)
 	this.physics.add.overlap(lime1,window.camul,riddle)
 	plat(800, -100)
+	plat(1000, -200)
+	plat(1000, -400)
+	plat(1150, -400)
+	plat(1580, -400)
+	plat(1580, -500)
 	this.physics.add.collider(window.camul,plats)
 	this.cameras.main.startFollow(window.camul)
 	this.cameras.main.setZoom(1)  
@@ -144,11 +145,14 @@ function create() {
     Button.destroy();
     title = false
   })
-
+	bgmusic.play()
 }
 function update(){
 //audio spatialization
-let distanceThreshold = 500; //This is the max distance from the object. Any farther and no sound is played.
+//bgmusic.resume()//.pause().resume()
+bgmusic.setVolume(0.7)
+bgmusic.setLoop(true)
+let distanceThreshold = 500; 
 let distanceToObject = Phaser.Math.Distance.Between(window.camul.x, window.camul.y, tick.x, tick.y);
 let normalizedSound = 1 - (distanceToObject / distanceThreshold);
 thump.setVolume(normalizedSound)//normalizedSound;
@@ -213,4 +217,7 @@ if (inc%30 == 4) thump.play()
 }
 function render() {}
 </script>
+
+
+
 </body></html>
