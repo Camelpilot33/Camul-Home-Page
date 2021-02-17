@@ -7,7 +7,7 @@
 
 <script>
 const config = {
-  type: Phaser.AUTO,
+  type: Phaser.WEBGL,
   width: 500,
   height: 500,
   backgroundColor: 0x7777FF,
@@ -29,7 +29,8 @@ const config = {
   scene: {
     preload: preload,
     create: create,
-    update: update
+    update: update,
+		render: render
   }
 }
 const game = new Phaser.Game(config);
@@ -38,6 +39,7 @@ var hsv = Phaser.Display.Color.HSVColorWheel();
 var q = 0
 var score = 0
 var inc = 0
+var warp = 0
 //HighScore initiation ----------
 const SAVEKEY = "highscore"
 var scoreHigh = localStorage.getItem(SAVEKEY)
@@ -57,6 +59,7 @@ function preload() {
 	 this.load.audio("collect",'https://camelpilot33.github.io/Camul-Home-Page/Audio/coin.wav')
 	 this.load.audio("jump",'https://camelpilot33.github.io/Camul-Home-Page/Audio/Jump.wav')
 	 this.load.audio("footstep",'https://camelpilot33.github.io/Camul-Home-Page/Audio/footstep.wav')
+	 this.load.audio("thump",'https://camelpilot33.github.io/Camul-Home-Page/Audio/sound.wav')
 }
 function create() {
 		W = this.input.keyboard.addKey('W');
@@ -64,15 +67,15 @@ function create() {
  		A = this.input.keyboard.addKey('A');
  		D = this.input.keyboard.addKey('D');
 		//AUDIO ------------------------
-	 var music = this.sound.add('bgsound',{
+	 music = this.sound.add('bgsound',{
     mute: false,
     volume: 0.5,
-    rate: 1,
     loop: true,
     delay: 0
 }).play();
 	 collect = this.sound.add('collect')
 	 jump = this.sound.add('jump')
+	 thump = this.sound.add("thump")
 	 //CREATE-----------------------
   this.anims.create({
  		key: 'left',
@@ -81,7 +84,10 @@ function create() {
 		repeat: -1
 	});
   window.camul = this.physics.add.sprite(0, 100, 'camul').setInteractive().play('left').setGravityY(500)
-	tick = this.physics.add.sprite(-300,0,'tick')
+	tick = this.physics.add.sprite(-400,0,'tick')
+	//scoring
+	scoretxt = this.add.text(0, 0, 'Score: '+score, { font: "20px Arial Black", fill: "#FFFFFF" }).setScrollFactor(0.0).setTint(0xFFd700)
+	scoreHightxt = this.add.text(0, 30, 'Best: '+scoreHigh, { font: "20px Arial Black", fill: "#FFFFFF" }).setScrollFactor(0.0);
 	this.physics.add.collider(camul,tick,function(){camul.disableBody(true,true)})
 	plats = this.physics.add.staticGroup()
 	function plat(x,y) {
@@ -141,6 +147,13 @@ function create() {
 
 }
 function update(){
+//audio spatialization
+let distanceThreshold = 500; //This is the max distance from the object. Any farther and no sound is played.
+let distanceToObject = Phaser.Math.Distance.Between(window.camul.x, window.camul.y, tick.x, tick.y);
+let normalizedSound = 1 - (distanceToObject / distanceThreshold);
+thump.setVolume(normalizedSound)//normalizedSound;
+if (inc%30 == 4) thump.play()
+//title
 	if (title == true){
 	var tint = hsv[q]
   q++;
@@ -159,6 +172,18 @@ function update(){
 			scoreHigh = score
 			localStorage.setItem(SAVEKEY,scoreHigh)
 		}
+		//text update -------------------------
+		scoretxt.setText("Score: "+score)
+		scoreHightxt.setText("HI: "+scoreHigh)
+    const chroma = hsv[359 - warp].color;
+		scoreHightxt.setTint(chroma)
+		if (score == scoreHigh){scoretxt.setTint(chroma);}
+		warp++
+    if (warp == hsv.length)
+    {
+        warp = 0;
+    }
+		//movement ----------------------------
 		if ((window.camul.body.velocity.x>1 || window.camul.body.velocity.x<-1) && window.camul.body.onFloor() && inc%15 == 4) {
         this.sound.play('footstep');
     }
@@ -186,5 +211,6 @@ function update(){
 	//detect death
 	if(window.camul.body.velocity.y > 1000) window.camul.disableBody(true,true)
 }
+function render() {}
 </script>
 </body></html>
