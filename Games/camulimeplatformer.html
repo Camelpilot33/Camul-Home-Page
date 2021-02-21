@@ -1,6 +1,3 @@
-<html><head>
-    <script language="javascript" type="text/javascript" 
-  src="Header.txt"></script>
 <center><button onclick="localStorage.clear()">Reset High Score</button>
 <h3 style="color:red;">This game is in a development stage</h3></center>
 <script src="https://cdn.jsdelivr.net/npm/phaser@3.24.1/dist/phaser-arcade-physics.min.js"></script>
@@ -12,25 +9,25 @@ const config = {
   height: 500,
   backgroundColor: 0x7777FF,
 	scale: {
-        mode: Phaser.Scale.FIT,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-    },
+    	mode: Phaser.Scale.FIT,
+    	autoCenter: Phaser.Scale.CENTER_BOTH,
+	},
   parent: "game-container",
   physics: {
-    default: 'arcade',
-    arcade: {
-      debug: false, //eval(window.prompt("debug?")) 
-      //gravity: {y:650}
-    }
+	default: 'arcade',
+	arcade: {
+  	debug: true, //eval(window.prompt("debug?"))
+  	//gravity: {y:650}
+	}
   },
 	audio: {
-        disableWebAudio: true
-    },
+    	disableWebAudio: true
+	},
   scene: {
-    preload: preload,
-    create: create,
-    update: update,
-		render: render
+	preload: preload,
+	create: create,
+	update: update,
+    	render: render
   }
 }
 const game = new Phaser.Game(config);
@@ -40,6 +37,7 @@ var q = 0
 var score = 0
 var inc = 0
 var warp = 0
+var flying = false
 //HighScore initiation ----------
 const SAVEKEY = "highscore"
 var scoreHigh = localStorage.getItem(SAVEKEY)
@@ -47,64 +45,90 @@ var scoreSTR = localStorage.getItem(SAVEKEY)
 if (scoreSTR == null)scoreHigh = 0
 else scoreHigh = parseInt(scoreSTR)
 //load assets ----------
+//kill
 function preload() {
   this.load.spritesheet('camul', 'https://i.imgur.com/tmyUnnq.png', { frameWidth: 42.66666666666666666666667, frameHeight: 42.625});
-	 this.load.image('platform', 'https://i.imgur.com/VaUmAd3.png');
-	 this.load.image("button", 'https://i.imgur.com/dkt9AeI.png')
-	 this.load.image('tick','https://i.imgur.com/oAPJ5A2.png')
-	 this.load.image("lime", 'https://i.imgur.com/GjmByPc.png')
-	 this.load.image("barrier",'https://i.imgur.com/69npiyO.png')
-	 //audio ----------------
-	 this.load.audio("bgsound",'https://camelpilot33.github.io/Camul-Home-Page/Audio/CamulMusic.mp3')
-	 this.load.audio("collect",'https://camelpilot33.github.io/Camul-Home-Page/Audio/coin.wav')
-	 this.load.audio("jump",'https://camelpilot33.github.io/Camul-Home-Page/Audio/Jump.wav')
-	 this.load.audio("footstep",'https://camelpilot33.github.io/Camul-Home-Page/Audio/footstep.wav')
-	 this.load.audio("thump",'https://camelpilot33.github.io/Camul-Home-Page/Audio/sound.wav')
+ 	this.load.image('platform', 'https://i.imgur.com/VaUmAd3.png');
+ 	this.load.image("button", 'https://i.imgur.com/dkt9AeI.png')
+ 	this.load.image('tick','https://i.imgur.com/oAPJ5A2.png')
+ 	this.load.image("lime", 'https://i.imgur.com/GjmByPc.png')
+ 	this.load.image("barrier",'https://i.imgur.com/69npiyO.png')
+ 	this.load.image("ladder",'https://i.imgur.com/mnhWFGM.png')
+	this.load.image('bg', 'https://i.imgur.com/ZKeA015.png')
+ 	//audio ----------------
+ 	this.load.audio("bgsound",'https://camelpilot33.github.io/Camul-Home-Page/Audio/CamulMusic.mp3')
+ 	this.load.audio("collect",'https://camelpilot33.github.io/Camul-Home-Page/Audio/coin.wav')
+ 	this.load.audio("jump",'https://camelpilot33.github.io/Camul-Home-Page/Audio/Jump.wav')
+ 	this.load.audio("footstep",'https://camelpilot33.github.io/Camul-Home-Page/Audio/footstep.wav')
+ 	this.load.audio("thump",'https://camelpilot33.github.io/Camul-Home-Page/Audio/sound.wav')
 }
 function create() {
-		W = this.input.keyboard.addKey('W');
-	  S = this.input.keyboard.addKey('S');
- 		A = this.input.keyboard.addKey('A');
- 		D = this.input.keyboard.addKey('D');
-		//AUDIO ------------------------
-	 bgmusic = this.sound.add('bgsound')//.play();
-	 collect = this.sound.add('collect')
-	 jump = this.sound.add('jump')
-	 thump = this.sound.add("thump")
-	 //CREATE-----------------------
+bg = this.add.tileSprite(0,0,10000,3000,'bg')
+    	W = this.input.keyboard.addKey('W');
+  	S = this.input.keyboard.addKey('S');
+     	A = this.input.keyboard.addKey('A');
+     	D = this.input.keyboard.addKey('D');
+    	//AUDIO ------------------------
+ 	bgmusic = this.sound.add('bgsound')//.play();
+ 	collect = this.sound.add('collect')
+ 	jump = this.sound.add('jump')
+ 	thump = this.sound.add("thump")
+ 	//CREATE-----------------------
   this.anims.create({
- 		key: 'left',
- 		frames: this.anims.generateFrameNumbers('camul', { start: 12, end: 14 }),
- 		frameRate: 10,
-		repeat: -1
+     	key: 'left',
+     	frames: this.anims.generateFrameNumbers('camul', { start: 12, end: 14 }),
+     	frameRate: 10,
+    	repeat: -1
 	});
   window.camul = this.physics.add.sprite(0, 100, 'camul').setInteractive().play('left').setGravityY(500)
 	tick = this.physics.add.sprite(-400,0,'tick')
 	//scoring
 	scoretxt = this.add.text(0, 0, 'Score: '+score, { font: "20px Arial Black", fill: "#FFFFFF" }).setScrollFactor(0.0).setTint(0xFFd700)
 	scoreHightxt = this.add.text(0, 30, 'Best: '+scoreHigh, { font: "20px Arial Black", fill: "#FFFFFF" }).setScrollFactor(0.0);
-	this.physics.add.collider(camul,tick,function(){camul.disableBody(true,true)})
 	plats = this.physics.add.staticGroup()
 	function plat(x,y) {
-		plats.create(x, y,"platform").setScale(0.2).refreshBody().setSize(150, 20)
+    	plats.create(x, y,"platform").setScale(0.2).refreshBody().setSize(150, 20)
 	}
+	ladders = this.physics.add.group();
 	//riddles ---------------------
+    
+    
 	riddles = [
-		[["You have a farm of horses and chickens. There are 52 feet and 21 heads. How many horses do you have? (integer)"],["5"]],
-		[["37, 34, 31, 28, __? (integer)"],["25"]],
-		[["3 of the following add up to 27: 5, 6, 13, 16 (true/false)"],["true"]]
+    	[["You have a farm of horses and chickens. There are 52 feet and 21 heads. How many horses do you have? (integer)"],["5"]],
+    	[["37, 34, 31, 28, __? (integer)"],["25"]],
+    	[["3 of the following add up to 27: 5, 6, 13, 16 (true/false)"],["true"]],
+    	[["How many different ways can you rearrange ABCDE"],["119"]]
 	]
-	function riddle(){
-		let rand = Math.floor(Math.random()*riddles.length)
-		if (window.prompt(riddles[rand][0]) == riddles[rand][1]) {
-			lime1.disableBody(true,true)
-			bar1.disableBody(true,true)
-			score += 40
-			collect.play()
-		}
-		else {
-			window.camul.disableBody(true,true)
-		}
+	riddles2 = [
+	[["How many 3 digit numbers are divisible by 3?"],["300"]],[["How many 5 lowercase character passwords contain some letters more than once? (do not use parentheses, do not write as a huge number)"],["26^5-26!/21!"]]
+	]
+    
+    
+	function riddle(lime,camul){
+    	let rand = Math.floor(Math.random()*riddles.length)
+    	if (window.prompt(riddles[rand][0]) == riddles[rand][1]) {
+        	lime1.disableBody(true,true)
+        	bar1.disableBody(true,true)
+        	score += 40
+        	collect.play()
+       	 
+    	}
+    	else {
+        	window.camul.disableBody(true,true)
+    	}
+	}
+	function riddle2(){
+    	let rand = Math.floor(Math.random()*riddles2.length)
+    	if (window.prompt(riddles2[rand][0]) == riddles2[rand][1]) {
+        	lime2.disableBody(true,true)
+        	bar2.disableBody(true,true)
+        	score += 40
+        	collect.play()
+       	 
+    	}
+    	else {
+        	window.camul.disableBody(true,true)
+    	}
 	}
 	//world -----------------------
 	plat(0,200)
@@ -122,95 +146,141 @@ function create() {
 	plat(1000, -400)
 	plat(1150, -400)
 	plat(1580, -400)
-	plat(1580, -500)
-	this.physics.add.collider(window.camul,plats)
+	plat(1820, -550)
+	ladders.create(1700,-500,"ladder")
+	bar2 = plats.create(1900, -550,'barrier').setScale(10).refreshBody()
+	lime2 = this.physics.add.sprite(1820, -650,'lime').setScale(3)
+	this.physics.add.overlap(lime2,window.camul,riddle2)
+	plat(2100, -600)
+	plat(2210, -200)
+	plat(2300, -300)
+	plat(2550, -400)
+	plat(2780, -400)
+	plat(3020, -500)
+    
+	this.physics.add.overlap(window.camul,ladders,function(){
+    	window.camul.body.velocity.y = -100
+    	if (jump.isPlaying) jump.stop()
+	})
 	this.cameras.main.startFollow(window.camul)
 	this.cameras.main.setZoom(1)  
 	//title -----------------------
 	ts = this.add.rectangle(0, 100, 600,700,0x055555)//.setScale(2000).setTint(0x445566)
 	tstxt = this.add.text(-230, 0, 'CamuLime Platformer', {
-    fontSize: '40px',
-    fill: '#FFFFFF'
+	fontSize: '40px',
+	fill: '#FFFFFF'
   })
   Button = this.physics.add.image(0, 200, 'button').setScale(0.5).setInteractive()
   Button.on('pointerover', function() {
-    Button.setTint(0x555555);
+	Button.setTint(0x555555);
   }, this)
   Button.on('pointerout', function() {
-    Button.setTint(0xffffff);
+	Button.setTint(0xffffff);
   }, this)
   Button.on('pointerdown', function() {
-    ts.setAlpha(0)
-    tstxt.destroy();
-    Button.destroy();
-    title = false
+	ts.setAlpha(0)
+	tstxt.destroy();
+	Button.destroy();
+	title = false
   })
 	bgmusic.play()
+
+ col = this.physics.add.collider(window.camul,plats)
+	 death = this.physics.add.collider(camul,tick,function(){camul.disableBody(true,true)})
+
+ this.input.keyboard.createCombo([
+ 	38, 38, 40, 40, 37, 39, 37, 39, 66, 65, 13
+ 	], { resetOnMatch: true });
+ 	this.input.keyboard.on('keycombomatch', function (event) {
+    	switch(window.prompt("Hax:\n(1)Remove wall colliders\n(2)Invincibility")) {
+  	case "1":
+      	col.destroy();
+      	window.alert("Wallhacks Enabled")
+				flying = true
+    	break
+		case '2':
+			death.destroy();
+			window.alert("tick will not kill")
+			break
+  	default:
+      	window.alert("ENTER 1 or 2\nERROR")
+  	}})
+
 }
 function update(){
 //audio spatialization
 //bgmusic.resume()//.pause().resume()
-bgmusic.setVolume(0.7)
+
+
+bgmusic.setVolume(0.5)
+jump.setVolume(0.7)
 bgmusic.setLoop(true)
-let distanceThreshold = 500; 
+let distanceThreshold = 500;
 let distanceToObject = Phaser.Math.Distance.Between(window.camul.x, window.camul.y, tick.x, tick.y);
 let normalizedSound = 1 - (distanceToObject / distanceThreshold);
-thump.setVolume(normalizedSound)//normalizedSound;
+thump.setVolume(normalizedSound*0.7)//normalizedSound;
 if (inc%30 == 4) thump.play()
 //title
 	if (title == true){
 	var tint = hsv[q]
   q++;
   if (q === hsv.length) {
-    q = 0;
+	q = 0;
   }
   tstxt.setTint(tint.color);
 	window.camul.setVelocityY(-8.333333333333333215)
 	window.camul.y=100
 	}
-		if(title != true){
-		inc += 1
-		
-		//highScore
-		if (score > scoreHigh) {
-			scoreHigh = score
-			localStorage.setItem(SAVEKEY,scoreHigh)
-		}
-		//text update -------------------------
-		scoretxt.setText("Score: "+score)
-		scoreHightxt.setText("HI: "+scoreHigh)
-    const chroma = hsv[359 - warp].color;
-		scoreHightxt.setTint(chroma)
-		if (score == scoreHigh){scoretxt.setTint(chroma);}
-		warp++
-    if (warp == hsv.length)
-    {
-        warp = 0;
-    }
-		//movement ----------------------------
-		if ((window.camul.body.velocity.x>1 || window.camul.body.velocity.x<-1) && window.camul.body.onFloor() && inc%15 == 4) {
-        this.sound.play('footstep');
-    }
-		let angle = Phaser.Math.Angle.Between(tick.x, tick.y, window.camul.x, window.camul.y);
-    tick.setRotation(angle+1.5)
-		this.physics.moveToObject(tick,window.camul,20)
-    if (D.isDown) {
-      window.camul.flipX = true
-      window.camul.anims.resume()
-			window.camul.setVelocityX(200)
-    }
-		if (A.isDown) {
-      window.camul.flipX = false
-      window.camul.anims.resume()
-			window.camul.setVelocityX(-200)
-    }
-    if (!(window.camul.body.touching.down)) window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
-    if (W.isDown && window.camul.body.touching.down) {window.camul.body.setVelocityY(-350);jump.play()}
-    if (!(A.isDown || D.isDown)) {
+    	if(title != true){
+    	inc += 1
+   	 
+    	//highScore
+    	if (score > scoreHigh) {
+        	scoreHigh = score
+        	localStorage.setItem(SAVEKEY,scoreHigh)
+    	}
+    	//text update -------------------------
+    	scoretxt.setText("Score: "+score)
+    	scoreHightxt.setText("HI: "+scoreHigh)
+	const chroma = hsv[359 - warp].color;
+    	scoreHightxt.setTint(chroma)
+    	if (score == scoreHigh){scoretxt.setTint(chroma);}
+    	warp++
+	if (warp == hsv.length)
+	{
+    	warp = 0;
+	}
+    	//movement ----------------------------
+    	if ((window.camul.body.velocity.x>1 || window.camul.body.velocity.x<-1) && window.camul.body.onFloor() && inc%15 == 4) {
+    	this.sound.play('footstep');
+	}
+    	let angle = Phaser.Math.Angle.Between(tick.x, tick.y, window.camul.x, window.camul.y);
+	tick.setRotation(angle+1.5)
+    	this.physics.moveToObject(tick,window.camul,20)
+	if (D.isDown) {
+  	window.camul.flipX = true
+  	window.camul.anims.resume()
+        	window.camul.setVelocityX(200)
+	}
+    	if (A.isDown) {
+  	window.camul.flipX = false
+  	window.camul.anims.resume()
+        	window.camul.setVelocityX(-200)
+	}
+	if (!(window.camul.body.touching.down)) window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
+	
+	
+	
+	if (flying == false){
+	if (W.isDown && window.camul.body.touching.down) {window.camul.body.setVelocityY(-350);jump.play()}
+	} else {
+	if(W.isDown) {window.camul.body.velocity.y = -300} else if (S.isDown) {window.camul.body.velocity.y = 300} else {window.camul.body.velocity.y = 0}
+	}
+	if (!(A.isDown || D.isDown)) {
     	window.camul.body.setVelocityX(0)
-      window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])
-    } else {window.camul.anims.resume()}
-		
+  	window.camul.anims.pause(window.camul.anims.currentAnim.frames[1])//w
+	} else {window.camul.anims.resume()}
+   	 
 	}
 	//detect death
 	if(window.camul.body.velocity.y > 1000) window.camul.disableBody(true,true)
@@ -220,4 +290,6 @@ function render() {}
 
 
 
-</body></html>
+
+
+
