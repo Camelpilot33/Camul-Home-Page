@@ -1,0 +1,35 @@
+<h1>Camul's Cool Converter</h1>
+<h3>Text to Binary</h3>
+<style>
+input { font-size: 12px; width: 500px; height: 40px }
+</style>
+<input id="ti1" value =""/>
+<br>
+<input id="ti2"/>
+<br>
+<button onclick="convert();">Convert to binary</button>
+<script>
+function convert() {
+  var  output=document.getElementById("ti2");  
+  var input=document.getElementById("ti1").value;
+    output.value = "";
+    for (i=0; i < input.length; i++) {
+     	output.value +=input[i].charCodeAt(0).toString(2) + " ";
+    }
+}
+</script>
+<br>
+<br>
+<h3>Binary to Text</h3>
+<input id="ti3" value =""/>
+<br>
+<input id="ti4"/>
+<br>
+<button onclick="BinToText();">Convert to text</button>
+<script>
+function BinToText() {
+    var input = document.getElementById("ti3").value;
+let outputstr = input.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2))).join('');
+    document.getElementById("ti4").value = outputstr
+}
+</script>
