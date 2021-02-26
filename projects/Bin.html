@@ -33,3 +33,42 @@ let outputstr = input.split(' ').map(bin => String.fromCharCode(parseInt(bin, 2)
     document.getElementById("ti4").value = outputstr
 }
 </script>
+<h3>Binary encryption</h3>
+<p>input binary</p>
+<input id="ti5" value =""/>
+<br>
+<p>key binary</p>
+<input id="ti6"/>
+<br>
+<p>output binary</p>
+<input id="ti7"/>
+<br>
+<button onclick="encrypt();">encrypt</button>
+<h3>Binary decryption</h3>
+<p>input binary</p>
+<input id="ti8" value =""/>
+<br>
+<p>key binary</p>
+<input id="ti9"/>
+<br>
+<p>output binary</p>
+<input id="ti10"/>
+<br>
+<button onclick="decrypt();">encrypt</button>
+<script>
+function dec2bin(dec){
+    return (dec >>> 0).toString(2);
+}
+function encrypt() {
+    var input = parseInt(document.getElementById("ti5").value,2)
+		var key = parseInt(document.getElementById("ti6").value,2)
+    var output = dec2bin(key*input)
+    document.getElementById("ti7").value = output
+}
+function decrypt() {
+    var input1 = parseInt(document.getElementById("ti8").value,2)
+		var key1 = parseInt(document.getElementById("ti9").value,2)
+    var output1 = dec2bin(input1/key1)
+    document.getElementById("ti10").value = output1
+}
+</script>
