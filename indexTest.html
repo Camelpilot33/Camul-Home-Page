@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/3/w3.css">
+<body>
+<nav class="w3-bar w3-black">
+  <a href="#" class="w3-button w3-bar-item">Home</a>
+  <a href="#camuls" class="w3-button w3-bar-item">Camuls</a>
+  <a href="#contact" class="w3-button w3-bar-item">Contact</a>
+</nav>
+<center>
+<section>
+  <img class="mySlides" src="https://thumbs-prod.si-cdn.com/GQOrNeGTZKiIO-yl2XzJwSUMmUQ=/800x600/filters:no_upscale()/https://public-media.si-cdn.com/filer/49/38/4938f123-986a-478c-8402-4c538201ebc4/gettyimages-1150889841.jpg" style="width:90%">
+  <img class="mySlides" src="https://i.imgur.com/WKIHo7t.png" style="width:100%">
+  <img class="mySlides" src="http://flyingthenest.tv/wp-content/uploads/2016/10/DSC02246.jpg" style="width:100%">
+</section>
+</center>
+<script>
+// Automatic Slideshow - change image every 3 seconds
+var myIndex = 0;
+carousel();
+
+function carousel() {
+  var i;
+  var x = document.getElementsByClassName("mySlides");
+  for (i = 0; i < x.length; i++) {
+    x[i].style.display = "none";
+  }
+  myIndex++;
+  if (myIndex > x.length) {myIndex = 1}
+  x[myIndex-1].style.display = "block";
+  setTimeout(carousel, 3000);
+}
+</script>
+<section class="w3-container w3-center" style="max-width:600px">
+  <h2 class="w3-wide" id="camuls">THE CAMULS</h2>
+  <p class="w3-opacity"><i>We love camuls</i></p>
+</section>
+<section class="w3-container w3-content w3-center" style="max-width:600px">
+<p class="w3-justify">
+Camuls are good animals. They have double eyelashes, large humps, and can walk up to 100 miles without water.</p>
+</section>
+<section class="w3-row-padding w3-center w3-light-grey">
+  <article class="w3-third">
+    <h4>Camul</h4>
+    <img src="https://i.imgur.com/WKIHo7t.png" alt="Random Name" style="width:100%">
+    <p>Camuls have fat in their humps.</p>
+  </article>
+  <article class="w3-third">
+    <h4>Tick</h4>
+    <img src="https://i.redd.it/p7wktzin0o631.png" alt="Random Name" style="width:100%">
+    <p>Tick has Hot MMMM 5</p>
+  </article>
+  <article class="w3-third">
+  <h4>Lime</h4>
+    <img src="https://chefsmandala.com/wp-content/uploads/2018/03/Lime-Whole-Half.jpg" alt="Random Name" style="width:100%">
+    <p>Lime's favorite color is lime green (obviously), and Lime is good at Pvp.</p>
+  </article>
+</section>
+<!-- Footer -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css">
+<footer class="w3-container w3-padding-64 w3-center w3-black w3-xlarge" id="contact">
+  <a href="#"><i class="fa fa-facebook-official"></i></a>
+  <a href="#"><i class="fa fa-pinterest-p"></i></a>
+  <a href="#"><i class="fa fa-twitter"></i></a>
+  <a href="#"><i class="fa fa-flickr"></i></a>
+  <a href="#"><i class="fa fa-linkedin"></i></a>
+  <p class="w3-medium">
+    Camul's Games: <a href="https://camelpilot33.github.io/Camul-Home-Page/" target="_blank">Home Page</a>
+  </p>
+  <p class="w3-medium">
+    <a href="#">Top</a>
+  </p>
+</footer>
+</body>
+</html>
