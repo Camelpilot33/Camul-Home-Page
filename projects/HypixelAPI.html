@@ -1,0 +1,55 @@
+<center>
+<title>Hypixel Api</title>
+<h1>Hypixel Api viewer</h1>
+<style>
+body {background-color: coral;}
+</style>
+<div>
+<form action="get()">
+  <label for="fname">View status:</label><br>
+  <input type="text" id="camul" name="uuid" value="UUID"><br>
+</form> 
+<button onClick="get()">Done</button>
+</div>
+<form action="null">
+  <label for="uuidcar">Enter name to see UUID</label><br>
+  <input type="text" id="uuidcar" name="ign" value="IGN"><br>
+</form> 
+<div id="uuidcarrier"></div>
+<button onClick="getuuid()">Get UUID</button>
+</center>
+<script>
+function getuuid() {
+	var ign = document.getElementById("uuidcar").value
+	document.getElementById("uuidcarrier").innerHTML = `<embed id="embed" type="text/html" src="https://api.mojang.com/users/profiles/minecraft/`+ign+`" width="500" height="50">`
+}
+</script>
+<script>
+//var embed = document.getElementById("embed").innerHTML;
+//console.log(embed)
+function get(){
+var str
+//api key = 6030eb08-b21b-4b6b-9dd6-7b059e83e475
+//get the name
+var camelpilot33 = `06e4fdae515a4b2eb0fe6d93c222d2d8`
+var name = document.getElementById("camul").value;
+window.fetch("https://api.hypixel.net/player?uuid="+name+"&key=6030eb08-b21b-4b6b-9dd6-7b059e83e475").then(result => result.json())
+    .then(({ player }) => {
+        var online;
+        // Log the player's username
+        if (player.lastLogin > player.lastLogout) online = true
+        else online = false
+        str = "<b>"+player.displayname+"</b>"+"<br> Last logged in on "+new Date(player.lastLogin)+"<br> Last logged out on "+new Date(player.lastLogout)+"<br> Logged in now: "+online
+   document.write(
+   `<center><title>Hypixel Api</title>
+<h1>Hypixel Api viewer</h1>`+
+   `<p>`+str+`</p>
+   	<style>
+	 	body {background-color: coral;}
+    p {color: yellow;}
+	 	</style>
+    </center>`
+);
+    })
+}
+</script>
