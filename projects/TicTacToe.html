@@ -1,0 +1,108 @@
+<center>
+<table>
+<tbody>
+<tr><td id="tl">1</td><td id="tm">2</td><td id="tr">3</td></tr>
+<tr><td id="ml">1</td><td id="mm">2</td><td id="mr">3</td></tr>
+<tr><td id="bl">1</td><td id="bm">2</td><td id="br">3</td></tr>
+</tbody>
+</table>
+<div id="turn">X will start</div>
+</center>
+
+<script>
+var x = "X"
+var o = "O"
+var xtrn = true
+var locations = [`tl`,`tm`,`tr`,`ml`,`mm`,`mr`,`bl`,`bm`,`br`]
+for (var i of locations) {
+	document.getElementById(i).innerHTML = "<button onClick='turn(`"+i+"`)'></button>"
+}
+function get(id){
+	return document.getElementById(id).innerHTML
+}
+function turn(coords){
+	if(xtrn) {
+  	document.getElementById(coords).innerHTML = x
+    xtrn = false
+  }
+  else {
+  	document.getElementById(coords).innerHTML = o
+    xtrn = true
+  }
+  var e;
+  if(xtrn == false) e = x
+  else e = o
+  if(e == x) {
+  	document.getElementById("turn").innerHTML = "It is "+o+"'s turn"
+  } else {
+  	document.getElementById("turn").innerHTML = "It is "+x+"'s turn"
+  }
+  function win() {
+  	document.getElementById("turn").innerHTML = e+" Has Won!"
+    for (var i of locations) {
+			if((document.getElementById(i).innerHTML != "X")&&(document.getElementById(i).innerHTML != "O")){
+      	document.getElementById(i).innerHTML = "<br>"
+      }
+		}
+  }
+  //check
+  //rows
+  if((get("tl") == e)&&(get("tm") == e)&&(get("tr") == e)) {
+  	win()
+  }
+  if((get("ml") == e)&&(get("mm") == e)&&(get("mr") == e)) {
+  	win()
+  }
+  if((get("bl") == e)&&(get("bm") == e)&&(get("br") == e)) {
+  	win()
+  }
+  //colums
+  if((get("tl") == e)&&(get("ml") == e)&&(get("bl") == e)) {
+  	win()
+  }
+  if((get("tm") == e)&&(get("mm") == e)&&(get("bm") == e)) {
+  	win()
+  }
+  if((get("tr") == e)&&(get("mr") == e)&&(get("br") == e)) {
+  	win()
+  }
+  //diagonals
+  if((get("tl") == e)&&(get("mm") == e)&&(get("br") == e)) {
+  	win()
+  }
+  if((get("tr") == e)&&(get("mm") == e)&&(get("bl") == e)) {
+  	win()
+  }
+}
+</script>
+<style>
+#turn {
+  color: yellow;
+  outline:2px solid yellow;
+  width: 90px
+}
+td {
+    outline:2px solid yellow;
+    padding: 3px;
+    color: yellow;
+    width: 16px
+}
+button {
+  background-color: brown;
+  border: 2px solid yellow;
+  border-radius: 3px;
+  height:16px;
+  transition-duration: 0.4s;
+}
+button:hover {
+  background-color: yellow
+}
+button:focus{
+  background-color:brown/*#901515;*/;
+  outline: 0px red
+}
+body {
+  background: brown;
+  zoom: 300%
+}
+</style>
