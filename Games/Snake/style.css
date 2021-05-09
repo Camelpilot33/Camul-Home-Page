@@ -1,0 +1,15 @@
+td {
+  background-color: #06ffea;
+  outline: 0px solid #c0c0c0;
+  padding:0px solid black;
+  width: 10px;
+  height: 10px;
+}
+body {
+  color:#F00;
+  zoom: 1;
+  background-color: #111;
+}
+table {
+  outline: 2px solid #F00;
+}
