@@ -50,7 +50,8 @@ function gen() {
         pos.x = Math.floor(Math.random()*4)
         pos.y = Math.floor(Math.random()*4)
         if (document.getElementById(pos.x + "," + pos.y).innerHTML == "") {
-            document.getElementById(pos.x + "," + pos.y).innerHTML = "<center>2</center>"
+            var num = (Math.floor(Math.random()*2)+1)*2
+            document.getElementById(pos.x + "," + pos.y).innerHTML = "<center>"+num+"</center>"
             done = true
         }
         err++
