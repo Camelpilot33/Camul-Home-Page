@@ -1,0 +1,40 @@
+﻿td {
+  background-color: #eee;
+  outline: 0px solid #c0c0c0;
+  padding:0px solid black;
+  width: 30px;
+  height: 30px;
+  border-radius: 30%;
+}
+table#table {
+  border-radius: 10%;
+  background-color: #404040;
+  padding: 3px;
+}
+div#table-border {
+	padding: 10px;
+}
+body {
+  background-color: #ccc;
+  font-family:'Brush Script MT', cursive;
+  /*font-family:'Courier New', monospace;*/
+  font-weight: 500;
+  font-family: "Clear Sans", "Helvetica Neue", Arial, sans-serif;
+  zoom:250%;
+}
+button {
+	background-color: #eee;
+	border: 2px solid #404040;
+	border-radius: 30%;
+	width: 30px;
+	transition-duration: 0.3s;
+}
+button:hover {
+	background-color: #404040;
+}
+sub {
+	font-size: 10px;
+}
+h1 {
+	margin: 0px;
+}
