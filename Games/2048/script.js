@@ -22,7 +22,7 @@ document.getElementById("table").innerHTML = table_str
 //document.getElementById("1,0").style.backgroundColor = "red"
 
 //set values
-/**/document.getElementById("0,0").innerHTML = "<center>2</center>"
+/*document.getElementById("0,0").innerHTML = "<center>2</center>"
 document.getElementById("1,0").innerHTML = "<center>4</center>"
 document.getElementById("2,0").innerHTML = "<center>8</center>"
 document.getElementById("3,0").innerHTML = "<center>16</center>"
@@ -58,7 +58,7 @@ function gen() {
 }
 
 function check() {
-  //gen()
+  gen()
   //get score
   var score = 0
   for (i=0;i<4;i++) {
