@@ -67,3 +67,94 @@ for (var i in str) {
 	}
 }
 console.log(x*y);
+//d3p1
+str=`<input>`
+str=str.split("\n")
+len=str[0].length
+gamma=""
+epsilon=""
+for (let i=0;i<len;i++) {
+	_0=0
+	_1=0
+	for (var j in str) {
+		if (str[j][i]=="0") {
+			_0++;
+		} else {
+			_1++;
+		}
+	}
+	if (_0>_1) {
+		gamma+="0";
+		epsilon+="1";
+	} else {
+		gamma+="1";
+		epsilon+="0";
+	}
+}
+gamma=parseInt(gamma,2)
+epsilon=parseInt(epsilon,2)
+console.log(gamma*epsilon)
+//d3p2
+const e=`<input>`
+str2=e.split("\n")
+str1=e.split("\n")
+len=str1[0].length
+O2=""
+CO2=""
+for (let i=0;i<len;i++) {
+	_0=0
+	_1=0
+	for (var j in str1) {
+		if (str1[j][i]=="0") {
+			_0++;
+		} else {
+			_1++;
+		}
+	}
+	
+	 if (_1>=_0) {
+		for (j=0;j<str1.length;j++) {
+			if (str1[j][i]=="0") {
+				str1.splice(j,1)
+				j--
+			}
+		}
+	} else {
+		for (j=0;j<str1.length;j++) {
+			if (str1[j][i]=="1") {
+				str1.splice(j,1)
+				j--
+			}
+		}
+	}
+	if (str1.length>0) O2=str1[0]
+}
+for (let i=0;i<len;i++) {
+	_0=0
+	_1=0
+	for (var j in str2) {
+		if (str2[j][i]=="0") {
+			_0++;
+		} else {
+			_1++;
+		}
+	}
+	
+	 if (_1<_0) {
+		for (j=0;j<str2.length;j++) {
+			if (str2[j][i]=="0") {
+				str2.splice(j,1)
+				j--
+			}
+		}
+	} else {
+		for (j=0;j<str2.length;j++) {
+			if (str2[j][i]=="1") {
+				str2.splice(j,1)
+				j--
+			}
+		}
+	}
+	if (str2.length>0) CO2=str2[0]
+}
+console.log(parseInt(O2,2)*parseInt(CO2,2))
