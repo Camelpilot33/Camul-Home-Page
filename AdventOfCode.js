@@ -158,3 +158,69 @@ for (let i=0;i<len;i++) {
 	if (str2.length>0) CO2=str2[0]
 }
 console.log(parseInt(O2,2)*parseInt(CO2,2))
+//d4p1
+const input=`<input>`
+nums=input.split("\n")[0]
+boards=input.split("\n\n")
+boards.shift()
+function isBingo(board, index) {
+	var numbers = nums.split(",")
+	numbers.splice(index,numbers.length-index)
+	board=board.split("\n")
+	for (var i in board) {
+		board[i]=board[i].split(" ")
+		for (var j in board[i]) {
+			if (board[i][j]=="") board[i].splice(j, 1);
+		}
+	}
+	//rows
+	for (var y in board) {
+		bingo=true
+		for (var x in board[y]) {
+			if (!numbers.includes(board[y][x]))bingo=false
+		}
+		if (bingo) return bingo
+	}
+	//columns
+	for (var y in board) {
+		bingo=true
+		for (var x in board[y]) {
+			if (!numbers.includes(board[x][y]))bingo=false
+		}
+		if (bingo) return bingo
+	}
+	return false
+}
+running=true
+e=0
+f=0
+for (k=0;k<nums.split(",").length;k++) {
+	for (l=0;l<boards.length;l++) {
+		if (isBingo(boards[l],k)) {
+		e=l
+		f=k
+		running=false
+		break
+		}
+	}
+	if (!running) break
+}
+nums=nums.split(",")
+nums.splice(f,nums.length-f)
+board=boards[e]
+board=board.split("\n")
+sum=0
+for (var i in board) {
+	board[i]=board[i].split(" ")
+	for (j=0;j<board[i].length;j++) {
+		if (board[i][j]=="") board[i].splice(j, 1);
+		if (nums.includes(board[i][j])) {
+			board[i].splice(j,1);
+			j--
+		}
+	}
+	for (var j of board[i]) {
+		sum += parseInt(j)
+	}
+}
+console.log(sum*parseInt(nums[f-1]))
