@@ -289,3 +289,79 @@ for (var i in board) {
 	}
 }
 console.log(sum*parseInt(nums[f-1]),e)
+//d5p1
+input=`<input>`
+vents=input.split('\n')
+board=""
+var maxX=0,maxY=0
+for (var i in vents) {
+	vents[i] = vents[i].split(" -> ")
+	for (var j in vents[i]) vents[i][j] = vents[i][j].split(",")
+}
+for (i=0;i<vents.length;i++) {
+	if (vents[i][0][0]!=vents[i][1][0]&&vents[i][0][1]!=vents[i][1][1]) {
+		vents.splice(i,1);
+		i--
+	}
+}
+for (var i in vents) {
+	if (parseInt(vents[i][0][0])>maxX) maxX=parseInt(vents[i][0][0])
+	if (parseInt(vents[i][1][0])>maxX) maxX=parseInt(vents[i][1][0])
+	if (parseInt(vents[i][0][1])>maxY) maxY=parseInt(vents[i][0][1])
+	if (parseInt(vents[i][1][1])>maxY) maxY=parseInt(vents[i][1][1])
+}
+for (x=0;x<maxY+1;x++) {
+	for (y=0;y<maxX+1;y++) {
+		board+="0"
+	}
+	if (x<maxX)board+="<n>"
+}
+board=board.split("<n>")
+for (var i in board) {
+	board[i]=board[i].split("")
+}
+function drawLine(index) {
+	pts=[]
+	x0=parseInt(vents[index][0][0])
+	x1=parseInt(vents[index][1][0])
+	y0=parseInt(vents[index][0][1])
+	y1=parseInt(vents[index][1][1])
+	//x0=x1 case ["0,9", "5,9"]
+	if (x0==x1) {
+		if (y0>y1) {
+			for (let j=y1;j<=y0;j++){
+				pts.push(x0+","+j)
+			}
+		} else if (y0==y1) pts.push(x0+","+y0) 
+		{
+			for (let j=y0;j<=y1;j++){
+				pts.push(x0+","+j)
+			}
+		}
+	} else if (y0==y1) {
+		if (x0>x1) {
+			for (let j=x1;j<=x0;j++){
+				pts.push(j+","+y0)
+			}
+		} else {
+			for (let j=x0;j<=x1;j++){
+				pts.push(j+","+y0)
+			}
+		}
+	}
+	for (var k of pts) {
+		board[parseInt(k.split(",")[1])][parseInt(k.split(",")[0])]=parseInt(board[parseInt(k.split(",")[1])][parseInt(k.split(",")[0])])+1
+	}
+}
+for (var i in vents) {
+	drawLine(i)
+}
+e=0
+for (var x in board) {
+	for (var y in board[x]) {
+		document.write(board[x][y])
+		if (board[x][y]>=2)e++
+	}
+	document.write("<br>")
+}
+console.log(e)
