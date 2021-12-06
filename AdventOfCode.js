@@ -399,3 +399,24 @@ const getPoints = floor => floor.reduce((accu, row) => accu + row.filter(element
 
 const result = getPoints(oceanFloor);
 console.log(result);
+//d6p1
+const input=`<input>`
+const fish=input.split(",").map(element => parseInt(element))
+function day(daycount) {
+	for (d=0;d<daycount;d++) {
+		for (i=0;i<fish.length;i++) {
+			let newfish=[]
+			if (fish[i]>0) {
+				fish[i]--
+			} else if (fish[i]==0) {
+				newfish.push(9)
+				fish[i]=6
+			}
+			for (var fishie of newfish) {
+				fish.push(fishie)
+			}
+		}
+	}
+	return fish.length
+}
+console.log(day(80))
