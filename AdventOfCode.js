@@ -420,3 +420,17 @@ function day(daycount) {
 	return fish.length
 }
 console.log(day(80))
+//d6p2 - realized that it can be accomplished by tracking a single array
+const input = `<input>`.split(",").map(element => parseInt(element))
+var fishies=new Array(9).fill(0)
+for (var i of input) {
+	fishies[i]++
+}
+for (var i=0;i<256;i++) {
+	var fish0=fishies[0]
+  for (var j=0;j<8;j++) fishies[j]=fishies[j+1]
+	fishies[6]+=fish0
+  fishies[8]=fish0
+}
+fishies=fishies.reduce((a, b) => a + b, 0)
+console.log(fishies)
