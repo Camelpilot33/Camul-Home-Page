@@ -463,7 +463,7 @@ function fuel(values,value) {
 	value=closest(values)
 	s=[0,0,0]
 	for (i=0;i<values.length;i++) {
-		n=Math.abs((value+1)-values[i])
+		n=Math.abs((value+1)-values[i])//it is possible to loop through these
 		s[0]+=(n*(n+1)/2)
 		n=Math.abs((value)-values[i])
 		s[1]+=(n*(n+1)/2)
