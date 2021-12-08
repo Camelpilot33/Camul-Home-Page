@@ -473,3 +473,15 @@ function fuel(values,value) {
 	return Math.min(...s)
 }
 console.log(fuel(input))
+//d8p1
+const input = `<input>`.split("\n").map(element=>element.split(" | ")[1]).map(element=>element.split(" "))
+nums=[2,4,3,7]
+s=0
+for (var i of input) {
+	for (var j of i) {
+		if (nums.includes(j.length)) {
+			s++
+		}
+	}
+}
+console.log(s)
