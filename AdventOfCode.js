@@ -454,3 +454,22 @@ function fuel(values,value) {
 	return s
 }
 console.log(fuel(input))
+//d7p2
+const input = ``.split(",").map(element => parseInt(element))
+function closest(values) {
+	return Math.round(values.reduce((a, b) => a + b, 0)/values.length)
+}
+function fuel(values,value) {
+	value=closest(values)
+	s=[0,0,0]
+	for (i=0;i<values.length;i++) {
+		n=Math.abs((value+1)-values[i])
+		s[0]+=(n*(n+1)/2)
+		n=Math.abs((value)-values[i])
+		s[1]+=(n*(n+1)/2)
+		n=Math.abs((value-1)-values[i])
+		s[2]+=(n*(n+1)/2)
+	}
+	return Math.min(...s)
+}
+console.log(fuel(input))
