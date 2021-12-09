@@ -594,3 +594,30 @@ for (var i in input) {
 	total+=solve(i)
 }
 console.log(total)
+//d9p1
+let totalRisk = 0;
+heightmap = `<input>`.split("\n").map(e=>e.split("").map(Number))
+lines = heightmap.length;
+cols = heightmap[0].length;
+const getAdjacencyIndexes = ([currLine, currCol], lines, cols) => {
+  const left = currCol - 1;
+  const right = currCol + 1;
+  const up = currLine - 1;
+  const down = currLine + 1;
+  let adjacencies = [];
+  if (false==(left < 0)) adjacencies.push([currLine, left])
+  if (false==(right >= cols)) adjacencies.push([currLine, right])
+  if (false==(up < 0)) adjacencies.push([up, currCol])
+  if (false==(down >= lines)) adjacencies.push([down, currCol])
+  return adjacencies;
+}
+  for (let i = 0; i < lines; i++) {
+    for (let j = 0; j < cols; j++) {
+      let adjacencies = getAdjacencyIndexes([i, j], lines, cols);
+      let isLowPoint = !adjacencies.some(([line, col]) => heightmap[i][j] >= heightmap[line][col]);
+      if (isLowPoint) {
+        totalRisk += (heightmap[i][j] + 1);
+      }
+    }
+  }
+  console.log(totalRisk);
