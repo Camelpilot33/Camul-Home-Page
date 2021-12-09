@@ -485,3 +485,112 @@ for (var i of input) {
 	}
 }
 console.log(s)
+//d8p2 - hardest one yet
+const input = `<input>`.split("\n").map(element=>element.split(" | "))
+const segments=['a','b','c','d','e','f','g']
+const digitNumberMap = {
+    abcefg: 0,
+    cf: 1,
+    acdeg: 2,
+    acdfg: 3,
+    bcdf: 4,
+    abdfg: 5,
+    abdefg: 6,
+    acf: 7,
+    abcdefg: 8,
+    abcdfg: 9
+};
+unique=[2,4,3,7]
+function solve(index) {
+	const com=(input[index][0]+" "+input[index][1]).split(" ")
+	const pattern1 = com.find(p => p.length === 2);
+	const pattern4 = com.find(p => p.length === 4);
+	const pattern7 = com.find(p => p.length === 3);
+	var possible = {
+    a: segments.filter(d => !pattern1.includes(d) && !pattern4.includes(d) && pattern7.includes(d)),
+    b: segments.filter(d => !pattern1.includes(d) && pattern4.includes(d) && !pattern7.includes(d)),
+    c: segments.filter(d => pattern1.includes(d) && pattern4.includes(d) && pattern7.includes(d)),
+    d: segments.filter(d => !pattern1.includes(d) && pattern4.includes(d) && !pattern7.includes(d)),
+    e: segments.filter(d => !pattern1.includes(d) && !pattern4.includes(d) && !pattern7.includes(d)),
+    f: segments.filter(d => pattern1.includes(d) && pattern4.includes(d) && pattern7.includes(d)),
+		g: segments.filter(d => !pattern1.includes(d) && !pattern4.includes(d) && !pattern7.includes(d)),
+  };
+	var possibilities=[]
+	function bruteG(a, b, c, d, e, f) {
+        for (const g of possible.g) {
+            if (g !== a && g !== b && g !== c && g !== d && g !== e && g !== f) {
+                const map = {};
+                map[a] = 'a';
+                map[b] = 'b';
+                map[c] = 'c';
+                map[d] = 'd';
+                map[e] = 'e';
+                map[f] = 'f';
+                map[g] = 'g';
+                possibilities.push(map);
+            }
+        }
+    }
+	function bruteF(a, b, c, d, e) {
+        for (const f of possible.f) {
+            if (f !== a && f !== b && f !== c && f !== d && f !== e) {
+                bruteG(a, b, c, d, e, f);
+            }
+        }
+    }
+  function bruteE(a, b, c, d) {
+        for (const e of possible.e) {
+            if (e !== a && e !== b && e !== c && e !== d)
+            bruteF(a, b, c, d, e);
+        }
+    }
+  function bruteD(a, b, c) {
+        for (const d of possible.d) {
+            if (d !== a && d !== b && d !== c) {
+                bruteE(a, b, c, d);
+            }
+        }
+    }
+  function bruteC(a, b) {
+        for (const c of possible.c) {
+            if (c !== a && c !== b) {
+                bruteD(a, b, c);
+            }
+        }
+    }
+  function bruteB(a) {
+        for (const b of possible.b) {
+            if (b !== a) {
+                bruteC(a, b);
+            }
+        }
+    }
+  function bruteA() {
+        for (const a of possible.a) {
+            bruteB(a);
+        }
+    }
+	bruteA();
+	var map={}
+	for (var i of possibilities) {
+		var working = true
+		for (var j of com) {
+			if (digitNumberMap[j.split("").map(d=>i[d]).sort().join("")] === undefined) {
+				working=false
+			}
+		}
+		if (working){
+			map=i
+		}
+	}
+	var sum=""
+	for (var i of input[index][1].split(" ")){
+		sum+=digitNumberMap[i.split("").map(d=>map[d]).sort().join("")]
+	}
+	return parseInt(sum)
+}
+total=0
+for (var i in input) {
+	total+=solve(i)
+}
+console.log(total)
