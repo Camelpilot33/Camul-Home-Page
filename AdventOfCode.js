@@ -621,3 +621,38 @@ const getAdjacencyIndexes = ([currLine, currCol], lines, cols) => {
     }
   }
   console.log(totalRisk);
+//d9p2
+const input=
+`<input>`.split("\n")
+e=input.map(e=>e.split("").map(Number))
+str="<table cellspacing=0>"
+for (var y in e) {
+	str+="<tr>"
+	for (var x in e[y]) str+="<td style='background-color:"+"hsl(0, 0%, "+(30+7*e[y][x])+"%)"+"'>"+""+"</td>"
+  str+="</tr>"
+}
+str+="</table>"
+document.write(str)
+function flood(i, j, map) {
+  if (map[i][j] === 1) return 0;
+  map[i][j] = 1;
+  let size = 1;
+  if (i - 1 >= 0) size += flood(i - 1, j, map);
+  if (i + 1 < map.length) size += flood(i + 1, j, map);
+  if (j - 1 >= 0) size += flood(i, j - 1, map);
+  if (j + 1 < map[i].length) size += flood(i, j + 1, map);
+  return size;
+}
+const map = Array(input.length).fill(0).map((x, i) => Array(input[0].length).fill(0).map((x, j) => (input[i][j] === "9" ? 1 : 0)));
+let basins = [];
+for (let i = 0; i < input.length; i++) {
+  const line = input[i];
+  for (let j = 0; j < line.length; j++) {
+    const size = flood(i, j, map);
+    if (size > 0) {
+      basins.push(size);
+    }
+  }
+}
+basins.sort((a, b) => b - a);
+document.write(basins[0] * basins[1] * basins[2]);
