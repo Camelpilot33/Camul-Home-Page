@@ -656,3 +656,49 @@ for (let i = 0; i < input.length; i++) {
 }
 basins.sort((a, b) => b - a);
 document.write(basins[0] * basins[1] * basins[2]);
+//d10p2
+const input=`<input>`.split("\n")
+err=0
+for (var i in input) {
+	str=""
+	console.log("r-"+i)
+	for (var j in input[i]) {
+		if (input[i][j]=="["||input[i][j]=="("||input[i][j]=="<"||input[i][j]=="{") {
+			str+=input[i][j]
+		} else if (input[i][j]=="]"||input[i][j]==")"||input[i][j]==">"||input[i][j]=="}") {
+			if (str[str.length-1]==getOpposite(input[i][j])) {
+				str=str.split("")
+				str.pop()
+				str=str.join('')
+			} else {
+				switch (input[i][j]) {
+					case ")":
+						err+=3;
+						break;
+					case "]":
+						err+=57;
+						break;
+					case "}":
+						err+=1197;
+						break;
+					case ">":
+						err+=25137;
+				}
+				break;
+			}
+		}
+	}
+}
+function getOpposite(a) {
+	switch (a) {
+					case ")":
+						return "(";
+					case "]":
+						return "[";
+					case "}":
+						return "{";
+					case ">":
+						return "<";
+				}
+}
+console.log(err)
