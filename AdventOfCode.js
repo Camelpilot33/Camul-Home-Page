@@ -702,3 +702,53 @@ function getOpposite(a) {
 				}
 }
 console.log(err)
+//d10p2
+const input=`<input>`.split("\n")
+errors=[]
+function getOpposite(a) {
+	switch (a) {
+					case ")":
+						return "(";
+					case "]":
+						return "[";
+					case "}":
+						return "{";
+					case ">":
+						return "<";
+				}
+}
+for (var i in input) {
+	err=0
+	str=""
+	for (var j in input[i]) {
+		if (input[i][j]=="["||input[i][j]=="("||input[i][j]=="<"||input[i][j]=="{") {
+			str+=input[i][j]
+		} else if (input[i][j]=="]"||input[i][j]==")"||input[i][j]==">"||input[i][j]=="}") {
+			if (str[str.length-1]==getOpposite(input[i][j])) {
+				str=str.substring(0, str.length - 1);
+			} else {
+				str=""
+				break;
+			}
+		}
+	}
+	for (var j=str.length-1;j>=0;j--) {
+		err*=5
+		switch (str[j]) {
+			case "(":
+				err+=1;
+				break;
+			case "[":
+				err+=2;
+				break;
+			case "{":
+				err+=3;
+				break;
+			case "<":
+				err+=4;
+		}
+	}
+	if (err!=0)errors.push(err)
+}
+errors.sort((a, b) => b - a);
+console.log(errors[(errors.length-1)/2])
