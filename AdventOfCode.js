@@ -814,3 +814,82 @@ function getAdjacent(x,y,arr) {
 step(100)
 console.log(total)
 document.write(input.map(e=>e.join('')).join("<br>").replace(/0/g,"<r>0</r>"))
+//d11p2
+document.write('<p id="e"></p>')
+var input=
+`4764745784
+4643457176
+8322628477
+7617152546
+6137518165
+1556723176
+2187861886
+2553422625
+4817584638
+3754285662`.split("\n").map(e=>e.split("").map(Number))
+var total=0
+function step(iter){
+	for (var p=0;p<iter;p++) {
+		for (var i in input) {
+			for (var j in input[i]) {
+				input[i][j]++
+			}
+		}
+		var flashed=[]
+		var flashes=flashesleft(input,flashed);
+		for (var k=0;k<100;k++) {
+			if(flashes) {
+				for (var i in input) {
+					for (var j in input[i]) {
+						if (input[i][j]>9&&!flashed.includes(j+","+i)) {
+							total++
+							for (var l of getAdjacent(parseInt(j),parseInt(i),input)) {
+								input[l[0]][l[1]]++
+							}
+							flashed.push(j+","+i)
+						}
+					}
+				}
+			}
+			flashes=flashesleft(input,flashed)
+		}
+		for (var i in flashed) {
+			input[flashed[i].split(",")[1]][flashed[i].split(",")[0]]=0
+		}
+	}
+}
+function flashesleft(input,flashed0) {
+	var e=false;
+	for (var i in input) {
+		for (var j in input[i]) {
+			if (input[i][j]>9&&!flashed0.includes(j+","+i))e=true
+		}
+	}
+	return e
+}
+function getAdjacent(x,y,arr) {
+	const left = x - 1;
+  const right = x + 1;
+  const up = y - 1;
+  const down = y + 1;
+  let adjacencies = [];
+  if (left >= 0) adjacencies.push([y, left])
+  if (right < arr[0].length) adjacencies.push([y, right])
+  if (up >= 0) adjacencies.push([up, x])
+  if (down < arr.length) adjacencies.push([down, x])
+	if (left>=0&&up>=0) adjacencies.push([up, left])
+	if (left>=0&&down<arr.length) adjacencies.push([down, left])
+	if (right<arr[0].length&&up>=0) adjacencies.push([up, right])
+	if (right<arr[0].length&&down<arr.length) adjacencies.push([down, right])
+  return adjacencies;
+}
+var t=0
+var interval = setInterval(function(){
+	step(1)
+	if (input.map(e=>e.join('')).join('')=="0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000") {
+		clearInterval(interval);
+		interval=null;
+	}
+	t++
+	document.getElementById("e").innerHTML = input.map(e=>e.join('')).join("<br>").replace(/0/g,"<r style='color:#00ff00'>0</r>")+"<br>"+t
+},1/*speed in ms*/)
