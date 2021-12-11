@@ -656,7 +656,7 @@ for (let i = 0; i < input.length; i++) {
 }
 basins.sort((a, b) => b - a);
 document.write(basins[0] * basins[1] * basins[2]);
-//d10p2
+//d10p1
 const input=`<input>`.split("\n")
 err=0
 for (var i in input) {
