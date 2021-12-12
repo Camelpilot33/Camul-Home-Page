@@ -894,13 +894,7 @@ var interval = setInterval(function(){
 	document.getElementById("e").innerHTML = input.map(e=>e.join('')).join("<br>").replace(/0/g,"<r style='color:#00ff00'>0</r>")+"<br>"+t
 },1/*speed in ms*/)
 //d12p1
-const input=`start-A
-start-bl
-A-c
-A-bl
-b-d
-A-end
-bl-end`.split('\n').map(e=>e.split("-"))
+const input=`<input>`.split('\n').map(e=>e.split("-"))
 var connections={}
 const isUpperCased = string => string.toUpperCase() == string;
 for (var i in input) {
