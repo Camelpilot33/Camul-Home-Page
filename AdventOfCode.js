@@ -923,3 +923,42 @@ while (toExplore.length > 0) {
     });
 }
 console.log(paths.length)
+//d12p2 - slow
+const input=`<input>`.split('\n').map(e=>e.split("-"))
+var connections={}
+const isUpperCased = string => string.toUpperCase() == string;
+for (var i in input) {
+	if (Object.keys(connections).indexOf(input[i][0]) == -1) connections[input[i][0]]=[]
+	if (Object.keys(connections).indexOf(input[i][1]) == -1) connections[input[i][1]]=[]
+}
+for (var i in input) {
+	connections[input[i][0]].push(input[i][1])
+	connections[input[i][1]].push(input[i][0])
+}
+function isValid(path) {
+    let howMantDuplicates = 0;
+    const sortedPath = path.filter(a => !isUpperCased(a) && a != 'start' && a != 'end').sort();
+    if (sortedPath.length <= 2)
+        return true;
+    for (let i = 1; i < sortedPath.length; i++) {
+        if (sortedPath[i - 1] == sortedPath[i])
+            howMantDuplicates++;
+    }
+    return howMantDuplicates <= 1
+}
+var paths=[]
+var toExplore=[['start']]
+while (toExplore.length > 0) {
+    const currPath = toExplore.pop();
+    const currLastPlace = currPath.at(-1);
+    if (currLastPlace == 'end') {
+        paths.push(currPath);
+        continue;
+    }
+    connections[currLastPlace].forEach(neighbour => {
+        if (neighbour == 'start') return;
+				var possiblePath = [...currPath, neighbour]
+        if (isValid(possiblePath)) toExplore.push([...currPath, neighbour]);
+    });
+}
+console.log(paths.length)
