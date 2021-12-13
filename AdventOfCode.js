@@ -962,3 +962,38 @@ while (toExplore.length > 0) {
     });
 }
 console.log(paths.length)
+//d13p1
+const input=`<input>`.split("\n\n")
+var points=input[0].split("\n").map(e=>e.split(",").map(Number))
+const folds=input[1].split("\n").map(e=>e.split(" ")[2].split("="))
+function fold(axis,length) {
+	length=parseInt(length)
+	if (axis=="x") {
+  	for (var i=0;i<points.length;i++) {
+    	if (points[i][0]>length) {
+      	points[i][0]=2*length-points[i][0]
+      }
+    }
+  } else if (axis=="y") {
+  	for (var i=0;i<points.length;i++) {
+    	if (points[i][1]>length) {
+      	points[i][1]=2*length-points[i][1]
+      }
+    }
+  }
+  return points
+}
+fold(folds[0][0],folds[0][1])
+var total=0
+var used=[]
+for (var i in points){
+	var push=true
+	for (var j in used) {
+	    if (points[i][0]==used[j][0]&&points[i][1]==used[j][1]) push=false
+	}
+  if (push) {
+  	total++
+    used.push(points[i])
+  }
+}
+console.log(total)
