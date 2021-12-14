@@ -997,3 +997,39 @@ for (var i in points){
   }
 }
 console.log(total)
+//day13p2
+const input=`<input>`.split("\n\n")
+var points=input[0].split("\n").map(e=>e.split(",").map(Number))
+const folds=input[1].split("\n").map(e=>e.split(" ")[2].split("="))
+function fold(axis,length) {
+	length=parseInt(length)
+	if (axis=="x") {
+  	for (var i=0;i<points.length;i++) {
+    	if (points[i][0]>length) {
+      	points[i][0]=2*length-points[i][0]
+      }
+    }
+  } else if (axis=="y") {
+  	for (var i=0;i<points.length;i++) {
+    	if (points[i][1]>length) {
+      	points[i][1]=2*length-points[i][1]
+      }
+    }
+  }
+  return points
+}
+for (var i in folds) {
+	fold(folds[i][0],folds[i][1])
+}
+maxX=0
+maxY=0
+for (var i in points) {
+	if (points[i][0]>maxX)maxX=points[i][0]+1
+	if (points[i][1]>maxY)maxY=points[i][1]+1
+}
+var board=[...new Array(maxY)].map(() => new Array(maxX).fill(0));
+for (var i in points) {
+	board[points[i][1]][points[i][0]] = 1
+}
+document.write(board.map(e=>e.join('').replace(/1/g,"<r style='background-color:red;color:red'>---</r>").replace(/0/g,"<r style='background-color:black;color:black'>---</r>")).join("<br>"))
+console.log("done")
