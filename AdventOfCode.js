@@ -1070,3 +1070,43 @@ for(var i = 0; i < substance.length; i++)
     }
 }
 console.log(counter[maxKey]-counter[minKey]);
+//d14p2
+const input=`<input>`.split("\n\n")
+var substance=input[0]
+const instruction_arr=input[1].split("\n").map(e=>e.split(" -> "))
+var instructions={}
+for (var i in instruction_arr) {
+	instructions[instruction_arr[i][0]]=instruction_arr[i][1]
+}
+pairs={}
+Object.keys(instructions).forEach(i=>pairs[i]=0)
+for (var i=0;i<substance.length-1;i++){
+	pairs[substance[i]+substance[i+1]] =1
+}
+for (var index=0;index<40;index++) {
+	newpairs={}
+	Object.keys(instructions).forEach(e=>newpairs[e]=0)
+	for (var i of Object.keys(pairs)) {
+		if (Object.keys(instructions).indexOf(i)>=0) {
+			//console.log(pairs[i],instructions[i],i,i[0]+instructions[i],instructions[i]+i[1])
+			newpairs[i[0]+instructions[i]]+=pairs[i]
+			newpairs[instructions[i]+i[1]]+=pairs[i]
+		} else {
+			newpairs[i] = pairs[i]
+		}
+	}
+	pairs=newpairs
+}
+var max=0
+var min=Infinity
+chars={}
+for (var pair of Object.keys(pairs)) {
+	if (!(chars[pair[0]]>=0))chars[pair[0]]=0
+	chars[pair[0]]+=pairs[pair]
+}
+chars[substance[substance.length-1]]++
+for (var c of Object.keys(chars)) {
+	if (chars[c]>max)max=chars[c]
+	if (chars[c]<min)min=chars[c]
+}
+console.log(max-min)
