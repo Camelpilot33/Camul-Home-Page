@@ -1033,3 +1033,40 @@ for (var i in points) {
 }
 document.write(board.map(e=>e.join('').replace(/1/g,"<r style='background-color:red;color:red'>---</r>").replace(/0/g,"<r style='background-color:black;color:black'>---</r>")).join("<br>"))
 console.log("done")
+//d14p1
+const input=`<input>`.split("\n\n")
+var substance=input[0]
+const instruction_arr=input[1].split("\n").map(e=>e.split(" -> "))
+var instructions={}
+for (var i in instruction_arr) {
+	instructions[instruction_arr[i][0]]=instruction_arr[i][1]
+}
+function step(steps) {
+	for (var index=0;index<steps;index++) {
+  	out=substance[0]
+  	for (var i=0;i<substance.length-1;i++) {
+    	out+=instructions[substance[i]+substance[i+1]]+substance[i+1]
+    }
+    substance=out
+  }
+  return out
+}
+step(10)
+var counter = {};
+var maxKey = '';
+var minKey = '';
+for(var i = 0; i < substance.length; i++)
+{
+    var key = substance[i];
+    if(!counter[key]){
+     counter[key] = 0;
+    }
+    counter[key]++;
+    if(maxKey == '' || counter[key] > counter[maxKey]){
+        maxKey = key;
+    }
+		if(minKey == '' || counter[key] < counter[minKey]){
+        minKey = key;
+    }
+}
+console.log(counter[maxKey]-counter[minKey]);
