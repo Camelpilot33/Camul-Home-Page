@@ -1110,3 +1110,64 @@ for (var c of Object.keys(chars)) {
 	if (chars[c]<min)min=chars[c]
 }
 console.log(max-min)
+//d15p1
+const grid = `<input>`.split("\n").map(e=>e.split("").map(Number))
+const coordsToStr = (x, y) => x+","+y
+const coordsToArr = str => str.split(',').map(x => parseInt(x));
+const MAX = grid.reduce((total, line) => total + line.reduce((a, b) => a + b, 0), 0)
+const endX = grid[0].length - 1;
+const endY = grid.length - 1;
+const nodes = {};
+function isValid([x,y]) {
+	return x >= 0 && x <= endX && y >= 0 && y <= endY;
+}
+const visited = new Set();
+const queue = new Set();
+let currentNode = [0, 0];
+grid.forEach((line, y) => {
+    line.forEach((cost, x) => {
+        nodes[coordsToStr(x, y)] = {
+            cost,
+            distance: MAX
+        };
+        queue.add(coordsToStr(x, y))
+    });
+});
+function updateDistance([x, y], curDistance) {
+    if (isValid([x, y])) {
+        const coordStr = coordsToStr(x, y);
+
+        if (coordStr in nodes && !visited.has(coordStr)) {
+            nodes[coordStr].distance = Math.min(nodes[coordStr].distance, curDistance + nodes[coordStr].cost);
+        }
+    }
+}
+function getShortest() {
+    var shortest = {
+        coords: [0, 0],
+        distance: Infinity
+    };
+
+    Array.from(queue).forEach(coords => {
+        if (nodes[coords].distance < shortest.distance) {
+            shortest.distance = nodes[coords].distance;
+            shortest.coords = coordsToArr(coords);
+        }
+    });
+
+    return shortest.coords;
+}
+nodes[coordsToStr(0, 0)].distance = 0;
+while (queue.size > 0 && queue.has(coordsToStr(endX, endY))) {
+    const coordStr = coordsToStr(currentNode[0], currentNode[1]);
+    const curDistance = nodes[coordStr].distance;
+    visited.add(coordStr);
+    queue.delete(coordStr);
+    updateDistance([currentNode[0], currentNode[1] - 1], curDistance); // up
+    updateDistance([currentNode[0] + 1, currentNode[1]], curDistance); // right
+    updateDistance([currentNode[0], currentNode[1] + 1], curDistance); // down
+    updateDistance([currentNode[0] - 1, currentNode[1]], curDistance); // left
+
+    currentNode = getShortest();
+}
+console.log(nodes[coordsToStr(endX,endY)].distance)
