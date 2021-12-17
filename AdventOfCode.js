@@ -1261,3 +1261,90 @@ while (queue.size > 0 && queue.has(coordsToStr(endX, endY))) {
 		if (time%1000==0)console.log(`Remaining nodes: ${queue.size}. Currently shortest path: ${shortestPath}`);
 }
 console.log(nodes[coordsToStr(endX, endY)])
+//d16p1
+const inputString=`<input>`
+const hexToBinString = `0 = 0000
+1 = 0001
+2 = 0010
+3 = 0011
+4 = 0100
+5 = 0101
+6 = 0110
+7 = 0111
+8 = 1000
+9 = 1001
+A = 1010
+B = 1011
+C = 1100
+D = 1101
+E = 1110
+F = 1111`;
+const hexToBin = {};
+hexToBinString.split('\n').map(a => a.split(' = ')).forEach(b => hexToBin[b[0]] = b[1]);
+const inputBinary = inputString.split('').map(a => hexToBin[a].split('')).flat();
+const packetFinder = (arr) => {
+    let packetArray = [];
+    if (arr.slice(3, 6).join('') == '100') {
+        packetArray = packetArray.concat(arr.slice(0, 6));
+        let flag = false;
+        while (flag == false) {
+            let chunk = arr.slice(packetArray.length, packetArray.length + 5);
+            packetArray = packetArray.concat(chunk);
+            flag = chunk[0] == '0' ? true : false;
+        }
+    } else {
+        packetArray = packetArray.concat(arr.slice(0, 7));       
+        if (packetArray[6] == '0') {
+            let bitLength = parseInt(arr.slice(7, 22).join(''), 2);
+            packetArray = packetArray.concat(arr.slice(7, 22));
+            let newArr = arr.slice(22, 22 + bitLength);
+            while (newArr.length > 0) {
+                let subIter = packetFinder(newArr);
+                let subPacket = subIter['packet'];
+                packetArray.push(subPacket);
+                newArr = subIter['newArray'];
+            }
+        } else {
+            let subNum = parseInt(arr.slice(7, 18).join(''), 2);
+            packetArray = packetArray.concat(arr.slice(7, 18));
+            let subset = arr.slice(packetArray.flat(100).length);
+						//console.log(packetArray.join(''))
+            for (let i = 0; i < subNum; i++) {
+                let iteration = packetFinder(subset);
+                packetArray.push(iteration['packet']);
+                subset = iteration['newArray'];
+            }
+						//console.log(packetArray,arr)
+            
+        }
+    }
+    return {'packet': packetArray, 'newArray': arr.slice(packetArray.flat(100).length)};
+}
+const packetFindIter = (arr) => {
+    let totalPacketArray = [];
+    while (arr.length > 0) {
+        let iteration = packetFinder(arr);
+        arr = iteration['newArray'];
+        let newPacketArray = iteration['packet'];
+        while (newPacketArray.flat().length % 4 != 0) {
+            newPacketArray.push(arr.shift());
+        }
+        totalPacketArray.push(newPacketArray);
+    }
+    return totalPacketArray;
+}
+const inputArray = packetFindIter(inputBinary);
+const versionCounter = (arr) => {
+    let result = 0;
+    for (var item of arr) {
+        if (typeof(item) == 'object' && item.length > 0) {
+            let a = item.slice(0, 3);
+            let count = parseInt(a.join(''), 2);
+            let sub = versionCounter(item);
+            result += (count + sub);
+
+        }
+    }
+    return result;
+}
+console.log(versionCounter(inputArray));
