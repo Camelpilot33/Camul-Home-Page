@@ -1348,3 +1348,6 @@ const versionCounter = (arr) => {
     return result;
 }
 console.log(versionCounter(inputArray));
+//d17p1
+const y=Math.abs(Math.min(...`target area: x=248..285, y=-85..-56`.split(", ")[1].slice(2).split("..").map(Number)))
+console.log(Math.floor(y*(y-1)/2))
