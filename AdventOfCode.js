@@ -1349,5 +1349,56 @@ const versionCounter = (arr) => {
 }
 console.log(versionCounter(inputArray));
 //d17p1
-const y=Math.abs(Math.min(...`target area: x=248..285, y=-85..-56`.split(", ")[1].slice(2).split("..").map(Number)))
+const y=Math.abs(Math.min(...`<input>`.split(", ")[1].slice(2).split("..").map(Number)))
 console.log(Math.floor(y*(y-1)/2))
+//d17p2
+const input=`<input>`.split(", ")
+const ymin=Math.min(...input[1].slice(2).split("..").map(Number))
+const ymax=Math.max(...input[1].slice(2).split("..").map(Number))
+const xmin=Math.min(...input[0].slice(15).split("..").map(Number))
+const xmax=Math.max(...input[0].slice(15).split("..").map(Number))
+var dxmin=0
+const checkx=(x=>{return xmin <= x&&x <= xmax})
+const checky=(y=>{return ymin <= y&&y <= ymax})
+while(dxmin*(dxmin+1)/2<=xmin) {
+	dxmin++
+}
+var validx=[]
+for (var dx=dxmin;dx<xmax+1;dx++) {
+	var step=0
+	var x=0
+	var xv=dx
+	var valid2=new Set()
+	while (step<2*Math.abs(ymin)+2&&x<=xmax) {
+  	x += xv
+  	xv = Math.max(xv-1, 0)
+  	step += 1
+  	if (checkx(x)) {
+			valid2.add(step)
+		}
+	}
+	validx.push(valid2)
+}
+var validy=[]
+for (var dy=ymin;dy<-ymin+1;dy++) {
+	var step=0
+	var y=0
+	var yv=dy
+	var valid2=new Set()
+	while (y>=ymin) {
+  	y += yv
+    yv -= 1
+    step += 1
+  	if (checky(y)) {
+			valid2.add(step)
+		}
+	}
+	validy.push(valid2)
+}
+count=0
+for (var i of validx) {
+	for (var j of validy) {
+		if ([...i].filter(e => j.has(e)).length>0) count++
+	}
+}
+console.log(count)
