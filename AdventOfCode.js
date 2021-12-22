@@ -1402,3 +1402,33 @@ for (var i of validx) {
 	}
 }
 console.log(count)
+//d21p1
+const input=`<input>`.split("\n").map(e=>e[e.length-1]).map(Number)
+var p1=[input[0],0]
+var p2=[input[1],0]
+var die=0
+var rolls=0
+function turn(p) {
+		if (p) {
+		for (i=0;i<3;i++) {
+			p1[0]+=die%100+1
+			die++
+		}
+		p1[0]=(p1[0]-1)%10+1
+		p1[1]+=p1[0]
+		} else {
+		for (i=0;i<3;i++) {
+			p2[0]+=die%100+1
+			die++
+		}
+		p2[0]=(p2[0]-1)%10+1
+		p2[1]+=p2[0]
+		}
+}
+for (var k=0;k<200;k++) {
+	turn(true)
+	if (p1[1]>=1000) break
+	turn(false)
+	if (p2[1]>=1000) break
+}
+console.log(die*Math.min(p1[1],p2[1]))
