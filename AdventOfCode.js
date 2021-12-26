@@ -1432,3 +1432,43 @@ for (var k=0;k<200;k++) {
 	if (p2[1]>=1000) break
 }
 console.log(die*Math.min(p1[1],p2[1]))
+//d25p1
+var input = `<input>`.replace(/\./g,"0").replace(/>/g,"1").replace(/v/g,"2")
+const xlen = input.split("\n")[0].length
+const ylen = input.split("\n").length
+function step() {
+	var newmap=[...new Array(ylen)].map(()=>(new Array(xlen).fill("0")))
+	var map=input.split("\n")
+	for (var y=0;y<ylen;y++) {
+		for (var x=0;x<xlen;x++) {
+			if (map[y][x]=="1") {
+				if (map[y][(x+1)%xlen]=="0") {
+					newmap[y][(x+1)%xlen] = "1"
+				} else {
+					newmap[y][x] = "1"
+				}
+			}
+		}
+	}
+	for (var y=0;y<ylen;y++) {
+		for (var x=0;x<xlen;x++) {
+			if (map[y][x]=="2") {
+				if (newmap[(y+1)%ylen][x]!="1" &&map[(y+1)%ylen][x]!="2") {
+					newmap[(y+1)%ylen][x] = "2"
+				} else {
+					newmap[y][x] = "2"
+				}
+			}
+		}
+	}
+	return newmap.map(e=>e.join('')).join("\n")
+}
+var save=""
+for (var i=0;i<Infinity;i++) {
+	input=step()
+	if (input==save) {
+		console.log(i+1)
+		break
+	}
+	save=input
+}
