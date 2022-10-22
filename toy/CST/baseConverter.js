@@ -8,7 +8,6 @@ const conv=(a,b,c)=>{
 		p++
 	}
 	let h=""
-	let i=0
 	while (x>0) {
 		h+=n[String(x%c)]
 		x=(x-(x%c))/c
