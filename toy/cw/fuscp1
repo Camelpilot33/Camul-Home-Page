@@ -1,1 +1,0 @@
-const fusc=n=>n==0|n==1?n:n%2==0?fusc(n/2):fusc(Math.ceil(n/2))+fusc(Math.floor(n/2))
