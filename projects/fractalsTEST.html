@@ -5,10 +5,9 @@
 </head>
 <body>
 		<input type="range" min="1" max="200" value="1" id="slider">
-		<p><span id="demo"></span></p>
+    <input type="range" min="0" max="70" value="1" id="theta">
 		<script>
 var slider = document.getElementById("slider");
-var output = document.getElementById("demo");
 output.innerHTML = slider.value;
 
 slider.oninput = function() {
@@ -21,6 +20,7 @@ slider.oninput = function() {
     var myCanvas = document.getElementById("my_canvas");
     var ctx = myCanvas.getContext("2d");
     function draw(startX, startY, len, angle) {
+        let theta = document.getElementById("theta").value;
         ctx.beginPath();
         ctx.save();
 
@@ -35,13 +35,19 @@ slider.oninput = function() {
             return;
         }
 
-        draw(0, -len, len*0.8, -15);
-        draw(0, -len, len*0.8, +15);
+        draw(0, -len, len*0.8, -theta);
+        draw(0, -len, len*0.8, +theta);
 
         ctx.restore();
     }
 		draw(350, 500, slider.value, 0)
 		var slider = document.getElementById("slider");
+    var slider2 = document.getElementById("theta");
+    slider2.oninput = function() {
+		const context = myCanvas.getContext('2d');
+		context.clearRect(0, 0, myCanvas.width, myCanvas.height);
+		draw(350, 500, slider.value, 0)
+		}  
 		slider.oninput = function() {
 		const context = myCanvas.getContext('2d');
 		context.clearRect(0, 0, myCanvas.width, myCanvas.height);
