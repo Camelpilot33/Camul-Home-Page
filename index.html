@@ -6,19 +6,21 @@
     background-color: #deb37f;
     font-family: "Lucida Console", "Courier New", monospace;
   }
-
-  .ox1 {
-    margin: auto;
-    width: 60%;
-    border: 5px solid #73AD21;
-    padding: 10px;
-  }
-  h1 {
+  .ox2 {
     text-align: center;
     Background-color: #ffe5c6;
     border:10px solid #b49572;
     border-radius: 100px;
     padding: 10px;
+    margin: auto;
+    width: 60%;
+  }
+  .ox1 {
+    padding: 20px;
+  }
+
+  table {
+    margin: auto;
   }
 
   submit {
@@ -38,61 +40,63 @@
 
 <body data-new-gr-c-s-check-loaded="14.995.0" data-gr-ext-installed="">
   <center>
-    <h1 style="color:#000">Camul Home Page</h1>
+    <h1 class="ox2" style="color:#000">Camul Home Page</h1>
     <h2 style="color:#000">Projects:</h2>
   </center>
-  <center class="ox1">
-    <table>
-      <caption><h3><u>Phaser Games</u></h3></caption>
-      <tbody style="text-align:right">
-        <tr>
-          <td>Camul&nbsp;-&nbsp;</td><td><button onclick="location.replace('Games/platformer.html')">Platformer 0</button></td>
-        </tr>
-        <tr>
-          <td>Camul&nbsp;-&nbsp;</td><td><button onclick="location.replace('Games/camulparkour.html')">Platformer 1</button></td>
-        </tr>
-        <tr>
-          <td>Camul&nbsp;&amp;&nbsp;Lime&nbsp;-&nbsp;</td><td><button onclick="location.replace('Games/camulimeplatformer.html')">Platformer 2</button></td>
-        </tr>
-        <tr>
-          <td>Camul&nbsp;&amp;&nbsp;Lime&nbsp;-&nbsp;</td><td style="text-align:left"><button onclick="location.replace('Games/camulimemaze.html')">Maze</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <table>
-      <tbody>
-        <caption><tr><h3><u>Other Games </u></h3></tr></caption>
-        <tr>
-          <td>Hypixel API: </td><td><button onclick="location.replace('projects/HypixelAPI.html')">Get Player Data</button></td>
-        </tr>
-        <tr>
-          <td>Table Game: </td><td><button onclick="location.replace('Games/TicTacToe.html')">TicTacToe</button></td>
-        </tr>
-        <tr>
-          <td>Table Game: </td><td><button onclick="location.replace('Games/Snake')">Snake</button></td>
-        </tr>
-        <tr>
-          <td>Table Game: </td><td><button onclick="location.replace('Games/2048')">2048</button></td>
-        </tr>
-        <tr>
-          <td>Table Game: </td><td><button onclick="location.replace('Games/connect4')">Connect 4</button></td>
-        </tr>
-      </tbody>
-    </table>
-    <table>
-      <caption><h3><u>Mathy Projects</u></h3></caption>
-      <tbody>
-        <tr>
-          <td>Plastic: </td><td><button onclick="location.replace('projects/plastic.html')">Spread Points</button></td>
-        </tr>
-        <tr>
-          <td>Binary: </td><td><button onclick="location.replace('projects/Bin.html')">Text Converter</button></td>
-        </tr>
-        <tr>
-          <td>Fractals: </td><td><button onclick="location.replace('projects/fractalsTEST.html')">Generate Tree</button></td>
-        </tr>
-      </tbody>
-    </table>
+  <center class="ox2">
+    <div class="ox1">
+      <table>
+        <caption><h3><u>Phaser Games</u></h3></caption>
+        <tbody style="text-align:right">
+          <tr>
+            <td>Camul&nbsp;-&nbsp;</td><td><button onclick="location.replace('Games/platformer.html')">Platformer 0</button></td>
+          </tr>
+          <tr>
+            <td>Camul&nbsp;-&nbsp;</td><td><button onclick="location.replace('Games/camulparkour.html')">Platformer 1</button></td>
+          </tr>
+          <tr>
+            <td>Camul&nbsp;&amp;&nbsp;Lime&nbsp;-&nbsp;</td><td><button onclick="location.replace('Games/camulimeplatformer.html')">Platformer 2</button></td>
+          </tr>
+          <tr>
+            <td>Camul&nbsp;&amp;&nbsp;Lime&nbsp;-&nbsp;</td><td style="text-align:left"><button onclick="location.replace('Games/camulimemaze.html')">Maze</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <tbody>
+          <caption><tr><h3><u>Other Games </u></h3></tr></caption>
+          <tr>
+            <td>Hypixel API: </td><td><button onclick="location.replace('projects/HypixelAPI.html')">Get Player Data</button></td>
+          </tr>
+          <tr>
+            <td>Table Game: </td><td><button onclick="location.replace('Games/TicTacToe.html')">TicTacToe</button></td>
+          </tr>
+          <tr>
+            <td>Table Game: </td><td><button onclick="location.replace('Games/Snake')">Snake</button></td>
+          </tr>
+          <tr>
+            <td>Table Game: </td><td><button onclick="location.replace('Games/2048')">2048</button></td>
+          </tr>
+          <tr>
+            <td>Table Game: </td><td><button onclick="location.replace('Games/connect4')">Connect 4</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <table>
+        <caption><h3><u>Mathy Projects</u></h3></caption>
+        <tbody>
+          <tr>
+            <td>Plastic: </td><td><button onclick="location.replace('projects/plastic.html')">Spread Points</button></td>
+          </tr>
+          <tr>
+            <td>Binary: </td><td><button onclick="location.replace('projects/Bin.html')">Text Converter</button></td>
+          </tr>
+          <tr>
+            <td>Fractals: </td><td><button onclick="location.replace('projects/fractalsTEST.html')">Generate Tree</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </center>
   <br>
 </body>
