@@ -1,0 +1,23 @@
+<script>
+let width=80
+let height=80
+let str="<table CELLSPACING=0>"
+for (var i=0;i<=height;i++) {
+	str+="<tr>"//<td class='r'>"+i+"</td>"
+	for (var j=0;j<=width;j++) {
+		let a=String(j**i)[String(j**i).length-1]
+		let m=255/9
+		str+="<td style=\"background-color:rgb("+(a*m)+","+(a*m)+","+(a*m)+")\"><span title='("+j+"^"+i+")'><center>"+"</center></span></td>"
+	}
+	str+="</tr>"
+}
+document.write(str)
+for (var x=0;x<100;x++) {
+	for (var y=0;y<100;y++) {
+		
+	}
+}
+var f=(a,b)=>{
+	
+}
+</script>
