@@ -6,9 +6,10 @@
 <body>
 		<input type="range" min="1" max="200" value="1" id="slider">
     <input type="range" min="0" max="70" value="1" id="theta">
-		<script>
+    <br>
+    <br>
+<script>
 var slider = document.getElementById("slider");
-output.innerHTML = slider.value;
 slider.oninput = function() {
   output.innerHTML = this.value;
 	console.log(slider.value)
