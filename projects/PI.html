@@ -1,0 +1,35 @@
+<Camul id='p'></Camul>
+<canvas id='c' width='500' height='500' ></canvas>
+<style>
+    body {
+        zoom:1;
+    }
+</style>
+<script>
+    let x=0
+    let y=0
+    var c = document.getElementById("c");
+    var ctx = c.getContext("2d");
+    ctx.beginPath();
+    //ctx.arc(50, 50, 50, 0, 2 * Math.PI);
+    ctx.stroke();
+    let f=()=>{
+        ctx.strokeStyle="#FF0000"
+        let p=[Math.random()-0.5,Math.random()-0.5]
+        if (Math.sqrt(((p[0])**2)+(p[1])**2)<0.5) {
+            x++
+            ctx.strokeStyle="#00FF00"
+        }
+        y++
+        ctx.beginPath();
+        ctx.arc(p[0]*500+250, p[1]*500+250, 1, 0, 2 * Math.PI);
+        ctx.stroke();
+        document.getElementById('p').innerHTML=('π: '+4*x/y+'<br>Trials:'+y+'<br>')
+        //clearInterval(a)
+    }
+    let g= ()=>{
+        for (var i=0;i<5000;i++) f()
+    }
+    let a=setInterval(g)
+</script>
+<button onclick="ctx.clearRect(0, 0, c.width, c.height);">Clear</button>
