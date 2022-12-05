@@ -9,9 +9,8 @@ const conv=(a,b,c)=>{
 	}
 	let h=""
 	while (x>0) {
-		h+=n[String(x%c)]
+        h+=n[String(x%c)]
 		x=(x-(x%c))/c
 	}
-	return h
+	return h.split('').reverse().join('')
 }
-console.log(conv("10",10,16))
