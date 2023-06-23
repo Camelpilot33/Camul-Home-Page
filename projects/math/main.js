@@ -1,10 +1,6 @@
-function main() {
-
-    
-
-}
-
-console.log("%cStart", "color:#00ff00");
+String.prototype.splice = function (idx, rem, str) {
+    return this.slice(0, idx) + str + this.slice(idx + Math.abs(rem));
+};
 const RPNEvaluator = (input) => {
     const stack = [];
 
@@ -133,7 +129,7 @@ const toRPN = (input) => {
 
     for (let i of input) {
         if (i === ' ') continue;
-
+        // console.log(i);
         handleToken(i);
     }
 
@@ -145,4 +141,23 @@ const toRPN = (input) => {
     return output;
 };
 
-console.log(toRPN('(1 + 2) * 3 - 4'))
+// console.log([1, 2].concat(5, 6));
+const tokenize = s => {
+    s = s.replace(/ /g, '');
+    let p = [...s.matchAll(/\d[x(]/g)].map(e => e.index);
+    for (i = 0; i < p.length; i++) {
+        s = s.splice(p[i] + 1 + i, 0, '*');
+    }
+    for (t of Object.keys(operators).concat(')', '(', 'x')) s = s.replace(new RegExp('\\' + t, 'g'), ' ' + t + ' ');
+    return s.replace(/  /g, ' ').trim().split(' ');
+};
+function main() {
+
+
+
+}
+console.log("%cTokenize", "color:#00ff00");
+console.log(tokenize('3( 10 + 2 ) * 3 - 4'));
+console.log(tokenize('(10+2)*3-4'));
+// console.log("%cToRPN", "color:#00ff00");
+// console.log(toRPN('( 10 + 2 ) * 3 - 4'))
