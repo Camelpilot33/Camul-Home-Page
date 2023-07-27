@@ -12,7 +12,7 @@ class AST {
         this.r = a;
     }
 }
-var rules = [
+const rules = [
     {
         key: "sin|cos|tan|cot|ln|sqrt|asin|acos|atan",
         data: {
@@ -53,11 +53,20 @@ var rules = [
     },
     { key: "[(\\[]", data: { type: "left" } },
     { key: "[)\\]]", data: { type: "right" } },
-    { key: "[0-9.,]+", data: { type: "num" } },
+    { key: "[0-9.,_]+", data: { type: "num" } },
     { key: "[a-zA-Z]", data: { type: "var" } }
 ];
 function tokenize(expression) {
     let exprs = [expression.replace(/ /g, '')];
+    let p = [...exprs[0].matchAll(/\d[a-zA-Z(]/g)].map(e => e.index);
+    for (let i = 0; i < p.length; i++) {
+        exprs[0]=exprs[0].slice(0, p[i] + 1 + i) + '*' + exprs[0].slice(p[i]+1+i);
+    }
+    p = [...exprs[0].matchAll(/(\(-|[+\-*/^]-)/g)].map(e => e.index);
+    if (exprs[0][0] == '-') exprs[0] = '_' + exprs[0].slice(1);
+    for (let i=0;i<p.length;i++) {
+        exprs[0] = exprs[0].slice(0, p[i]+1) + '_' + exprs[0].slice(p[i]+ 2);
+    }
     let output = exprs;
     for (r in rules) {
         output = output.map(a => {
@@ -82,7 +91,7 @@ const toast = tokens => { //implementation of shunting-yard algo
     let ops = [];
     let nodes = [];
     for (let token of tokens) {
-        // console.log('\n',token)
+        if (token.type=='num')token.token=token.token.replace('_','-')
         if (['num', 'var', 'const'].includes(token.type)) nodes.push(new AST(token));
         if (token.type == "left") ops.push(token);
         if (token.type == "right") {
@@ -111,7 +120,6 @@ const toast = tokens => { //implementation of shunting-yard algo
     while(ops.length>0) {
         let tk = ops.pop();
         let add = new AST(tk);
-
         if (tk.args > 1) add.right(nodes.pop());
         add.left(nodes.pop());
         nodes.push(add);
@@ -119,15 +127,10 @@ const toast = tokens => { //implementation of shunting-yard algo
     // console.log(nodes)
     return nodes.pop();
 };
-
-
-function transpose(matrix) {
-    return matrix[0].map((col, i) => matrix.map(row => row[i]));
-}
 function plotBinaryTree(root, prefix = 'V',lr=[],m=true,mode='v') {
     let char=0;
     if (mode == 'h') char = ['(', ')', '|', '-', 5,'┤','R','L']
-    else char = ['', '', '-', '|', 2, '', '.','.']
+    else char = ['', '', '—', '|', 2, '', '┐','┌']
     ind=lr=>{
         let ch=' '
         let ret = ch.repeat(char[4]);
@@ -140,9 +143,9 @@ function plotBinaryTree(root, prefix = 'V',lr=[],m=true,mode='v') {
 
     let str = []
     if (root.l) str.push(plotBinaryTree(root.l, char[7],[...lr,'l'],false,mode))
-    if (mode != 'h') str.push(ind(lr))
+    if (mode != 'h') str.push((m ? '' : ind(lr)) +' '.repeat(char[4])+'(')
     str.push(`${m ? '' : ind(lr)}${prefix}${char[3]+char[0]+root.tkn.token+char[1]}${root.l || root.r ?char[5]:''}`)
-    if (mode != 'h') str.push(ind(lr))
+    if (mode != 'h') str.push((m ? '' : ind(lr)) + ' '.repeat(char[4]) + ')')
     if (root.r) str.push(plotBinaryTree(root.r, char[6], [...lr, 'r'], false, mode))
     if (m) {
         let x = str.flat(Infinity).map(e => (typeof e == "string" ? e.split('') : e[0].split()))
@@ -154,15 +157,13 @@ function plotBinaryTree(root, prefix = 'V',lr=[],m=true,mode='v') {
         }
         else {
             x = x.map(e => e.concat(new Array(max - e.length).fill(' ')))
-            console.log(transpose(x).map(e => e.join('')).join('\n'))
+            console.log((x[0].map((col, i) => x.map(row => row[i]))).map(e => e.join('')).join('\n'))
         }
     }
     return str
 }
 
-str="(e^(i*x)-e^(0-i*x))/(2*i)"
+str ="-5+2-3-(-4)/i*-2^-1"
 console.log(str)
-// console.log(toast(tokenize(str)))
-plotBinaryTree(toast(tokenize(str)))
-// console.log(char)
-plotBinaryTree(toast(tokenize(str)),'>',[],true,'h')
+console.log(tokenize(str))
+plotBinaryTree(toast(tokenize(str)),'>',[],1,'h')
