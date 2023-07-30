@@ -13,8 +13,22 @@
 
 <body>
     <h1>Calculator</h1>
-    <label for="eqn">Equation:</label>
-    <input type="text" id="eqn" name="fname" placeholder="3x^2+1" size="30">&nbsp;<button onclick="main()">Convert</button>
+    <label for="eqn">Input:</label>
+    <input type="text" id="eqn" name="fname" placeholder="1+2" size="30"><br><br>
+
+    <button onclick="
+        document.getElementById('out').innerHTML=calc(toast(tokenize(document.getElementById('eqn').value)),0)
+    ">Evaluate</button>
+    <button onclick="
+        document.getElementById('out').innerHTML=(toast(tokenize(document.getElementById('eqn').value))).print('V',[],1,'v')
+            .replace(/ /g,'&nbsp;').replace(/\n/g,'<br>')
+    ">AST</button>
+    <button onclick="
+        document.getElementById('out').innerHTML=toast(tokenize(document.getElementById('eqn').value)).simplify().print('V',[],1,'v')
+            .replace(/ /g,'&nbsp;').replace(/\n/g,'<br>')
+    ">Simplified AST</button>
+
+
     <p id="out">Output</p>
 </body>
 
