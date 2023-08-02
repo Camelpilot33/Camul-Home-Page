@@ -40,6 +40,13 @@ class AST {
         if (t == '/') return `\\frac{${this.l.tex()}}{${this.r.tex()}}`;
         return `({${this.l.tex()}}${t}{${this.r.tex()}})`;
     }
+    /**
+     * @param {String} prefix 
+     * @param {Array} lr 
+     * @param {Boolean} m 
+     * @param {String} mode 
+     * @returns {String}
+     */
     print(prefix = 'V', lr = [], m = true, mode = 'v') {
         const root = this;
         if (typeof root == "number") root = new AST(new Object({ token: root }));
@@ -163,8 +170,8 @@ class AST {
             if (e[0].tkn.type == "num" && !Number(e[0].tkn.token)) return this.r.simplify();
             if (e[1].tkn.type == "num" && !Number(e[1].tkn.token)) return this.l.simplify();
             //reduction rule 1
-            if (e[0].tkn.token == e[1].tkn.token && ["num","var","const"].includes(e[0].tkn)) return AST.op('*', AST.num(2), e[0]);
-            let sum = this.collectSum().map(e=>e.factor())
+            // if (e[0].tkn.token == e[1].tkn.token && ["num", "var", "const"].includes(e[0].tkn)) return AST.op('*', AST.num(2), e[0]);
+            // let sum = this.collectSum().map(e => e.factor());
             // console.log('::',...sum,'::')
         } else if (t == '*') {
             if (e[0].tkn.type == "num" && !Number(e[0].tkn.token)) return AST.num(0);
@@ -196,12 +203,12 @@ class AST {
     }
     collectSum() {//add support for minus
         if (this.tkn.token == '+') return [this.l.collectSum(), this.r.collectSum()].flat();
-        if (this.tkn.token == '-') return [this.l.collectSum(), this.r.collectSum().negative()].flat();
+        if (this.tkn.token == '-') return [this.l.collectSum(), AST.op('*', AST.num(-1), this.r)].flat();
         return [this];
     }
     factor() {
         if (this.tkn.token == '*') return [this.l.factor(), this.r.factor()].flat();
-        if (this.tkn.token == '/') return [this.l.factor(), AST.op('^',this.r.factor(),AST.num(-1)).contract()].flat();
+        if (this.tkn.token == '/') return [this.l.factor(), AST.op('^', this.r, AST.num(-1)).contract()].flat();
         return [this];
     }
     negative() {
@@ -215,6 +222,9 @@ class AST {
     static num(n) {
         return new AST(new Object({ token: n, type: "num" }));
     }
+    static var(n) {
+        return new AST(new Object({ token: n, type: "var" }));
+    }
     /**
      * @param {String} op 
      * @param {AST} a 
@@ -224,6 +234,31 @@ class AST {
     static op(op, a, b) {
         return new AST(new Object({ token: op, type: "op" }), a, b);
     }
+    get log() {
+        return this.tkn.token + ((this.l != null || this.r != null) ? `(${this.l.log || ''}${this.l != null && this.r != null ? ', ' : ''}${this.r.log || ''})` : '');
+    }
+}
+
+function combineLikeTerms(node) {
+    let sum = node.collectSum().map(e => e.factor().map(w => w.simplify()));
+    let table = {};
+    let n=0
+    for (i in sum) {
+        let term = sum[i];
+        if (term.length==1&&term[0].tkn.type=="num"){
+            n+=Number(term[0].tkn.token);
+            continue;
+        }
+        let numpart = term.filter(x => (x.tkn.type == "num")).map(e => Number(e.tkn.token)).concat(1).reduce((a, b) => a * b, 1);
+        // console.log(numpart)
+        let a = term.filter(x => (x.tkn.type != "num"));//maybe find diff classifier
+        let temp = {};
+        for (let i of a) temp[i] = !temp[i] ? 1 : temp[i] + 1;
+        let varpart = Object.keys(temp).map(e => temp[e] == 1 ? e : AST.op('^', toast(tokenize(e)), AST.num(temp[e])).simplify().toString()).sort().join('*');
+        table[varpart] = table[varpart] == null ? numpart : table[varpart] + numpart;
+    }
+    table = Object.keys(table).map(e => AST.op('*', AST.num(table[e]),toast(tokenize(e)))).reduce((a,b)=>AST.op('+',a,b),AST.num(n)).simplify()
+    return table;
 }
 /**
  * @type {Array<{key:String,data:*}>}
@@ -327,7 +362,7 @@ function tokenize(expression) {
  * @param {Array<{token:String,type:String}>} tokens 
  * @returns {AST}
  */
-const toast = tokens => { //implementation of shunting-yard algo
+function toast(tokens) {
     let ops = [];
     let nodes = [];
     for (let token of tokens) {
@@ -379,7 +414,7 @@ const toast = tokens => { //implementation of shunting-yard algo
     };
     // console.log(nodes)
     return fixnegfunc(nodes.pop());
-};
+}
 /**
  * @param {AST} tree
  * @returns {AST} 
@@ -417,18 +452,20 @@ function calc(tree, mode = 0) {
     }
     else throw Error;
 }
-const equivalent = (a, b) => {
+function equivalent(a, b) {
     a = a.simplify();
     b = b.simplify();
     if (a.tkn.token != b.tkn.token) return false;
     if (["const", 'var', "num"].includes(a.tkn.type)) return true;
     if (a.tkn.type == "func") return equivalent(a.l, b.l);
     // if (t == '+') return (equivalent(a.l, b.l) && equivalent(a.r, b.r)) || (equivalent(a.r, b.l) && equivalent(a.l, b.r));
-};
-// const tree=toast(tokenize("2x+3x+4"))
-const tree = toast(tokenize("2"));
-console.log(tree.factor());
-console.log(tree.simplify().print(), '\n\n');
+}
+const tree = toast(tokenize("2+x"));
+// console.log(toast(tokenize("x2y^2")).factor().map(e=>e.log).join('\n'))
+// let sum = tree.collectSum().map(e => e.factor());
+// console.log(...toast(tokenize("2/x")).factor())
+console.log(tree.print())
+console.log("\n\n"+combineLikeTerms(tree).print());
 // console.log(equivalent(...["x","x+0"].map(e=>toast(tokenize(e)))));
 
 /***TODO
