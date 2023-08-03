@@ -119,7 +119,7 @@ class AST {
         }
         else throw Error;
     }
-    simplify() {
+    simplify(rt=true) {
         /* need to add a while loop
          * while (x!=x.simplify) x=x.simplify
          *  -check side effects
@@ -169,6 +169,7 @@ class AST {
         if (t == '+') {
             if (e[0].tkn.type == "num" && !Number(e[0].tkn.token)) return this.r.simplify();
             if (e[1].tkn.type == "num" && !Number(e[1].tkn.token)) return this.l.simplify();
+            if (rt)return this.combineLikeTerms()
             //reduction rule 1
             // if (e[0].tkn.token == e[1].tkn.token && ["num", "var", "const"].includes(e[0].tkn)) return AST.op('*', AST.num(2), e[0]);
             // let sum = this.collectSum().map(e => e.factor());
@@ -215,6 +216,34 @@ class AST {
         if (this.tkn.type == 'num') return AST.num(-1 * Number(this.tkn.token));
         return AST.op('*', AST.num(-1), this);
     }
+    combineLikeTerms() {
+        let sum = this.collectSum().map(e => e.factor().map(w => w.simplify()));
+        let table = {};
+        let n = 0;
+        for (i in sum) {
+            let term = sum[i];
+            if (term.length == 1 && term[0].tkn.type == "num") {
+                n += Number(term[0].tkn.token);
+                continue;
+            }
+            let numpart = term.filter(x => (x.tkn.type == "num")).map(e => Number(e.tkn.token)).concat(1).reduce((a, b) => a * b, 1);
+            // console.log(numpart)
+            let a = term.filter(x => (x.tkn.type != "num"));//maybe find diff classifier
+            let temp = {};
+            for (let i of a) temp[i] = !temp[i] ? 1 : temp[i] + 1;
+            let varpart = Object.keys(temp).map(e => temp[e] == 1 ? e : AST.op('^', toast(tokenize(e)).simplify(), AST.num(temp[e])).simplify().toString()).sort().join('*');
+            table[varpart] = table[varpart] == null ? numpart : table[varpart] + numpart;
+        }
+        table = Object.keys(table).map(e => AST.op('*', AST.num(table[e]), toast(tokenize(e)))).reduce((a, b) => AST.op('+', a, b), AST.num(n)).simplify(false);
+        return table;
+    }
+    numDeriv(x,v='x') {
+        let h=Number.EPSILON
+        let a = (calc(this, 2, { [v]: x + h }) - calc(this, 2, { [v]: x }))
+        let b = (calc(this, 2, { [v]: x - h }) - calc(this, 2, { [v]: x }))
+        // console.log(':',a/h,-b/h)
+        return Math.round((a - b) / (2 * h) * (10**10)) / 10**10
+    }
     /**
      * @param {Number} n 
      * @returns {AST}
@@ -237,28 +266,6 @@ class AST {
     get log() {
         return this.tkn.token + ((this.l != null || this.r != null) ? `(${this.l.log || ''}${this.l != null && this.r != null ? ', ' : ''}${this.r.log || ''})` : '');
     }
-}
-
-function combineLikeTerms(node) {
-    let sum = node.collectSum().map(e => e.factor().map(w => w.simplify()));
-    let table = {};
-    let n=0
-    for (i in sum) {
-        let term = sum[i];
-        if (term.length==1&&term[0].tkn.type=="num"){
-            n+=Number(term[0].tkn.token);
-            continue;
-        }
-        let numpart = term.filter(x => (x.tkn.type == "num")).map(e => Number(e.tkn.token)).concat(1).reduce((a, b) => a * b, 1);
-        // console.log(numpart)
-        let a = term.filter(x => (x.tkn.type != "num"));//maybe find diff classifier
-        let temp = {};
-        for (let i of a) temp[i] = !temp[i] ? 1 : temp[i] + 1;
-        let varpart = Object.keys(temp).map(e => temp[e] == 1 ? e : AST.op('^', toast(tokenize(e)), AST.num(temp[e])).simplify().toString()).sort().join('*');
-        table[varpart] = table[varpart] == null ? numpart : table[varpart] + numpart;
-    }
-    table = Object.keys(table).map(e => AST.op('*', AST.num(table[e]),toast(tokenize(e)))).reduce((a,b)=>AST.op('+',a,b),AST.num(n)).simplify()
-    return table;
 }
 /**
  * @type {Array<{key:String,data:*}>}
@@ -419,10 +426,15 @@ function toast(tokens) {
  * @param {AST} tree
  * @returns {AST} 
  */
-function calc(tree, mode = 0) {
+function calc(tree, mode = 0, params={}) {
     // console.log(tree)
     if (tree.tkn.type == 'num') return Number(tree.tkn.token);
-    else if (['const', 'var'].includes(tree.tkn.type)) {
+    if (mode == 2 && ['var', 'const'].includes(tree.tkn.type)) {
+        if (tree.tkn.token == 'e') return Math.E;
+        if (tree.tkn.token == 'pi') return Math.PI;
+        if (Object.keys(params).includes(tree.tkn.token)) return params[tree.tkn.token]
+    }
+    if (['const', 'var'].includes(tree.tkn.type)) {
         if (mode == 0) return tree;
         switch (tree.tkn.token) {
             case 'e': return Math.E;
@@ -431,7 +443,7 @@ function calc(tree, mode = 0) {
         }
     }
     else if (tree.tkn.type == 'func') {
-        let a = calc(tree.l, mode);
+        let a = calc(tree.l, mode,params);
         if (typeof a == "number") {
             if (tree.tkn.token == "ln") return Math.log(a);
             else return Math[tree.tkn.token](a);
@@ -440,8 +452,8 @@ function calc(tree, mode = 0) {
         }
     }
     else if (tree.tkn.type == "op") {
-        let a = calc(tree.l, mode);
-        let b = calc(tree.r, mode);
+        let a = calc(tree.l, mode,params);
+        let b = calc(tree.r, mode,params);
         if (typeof a == "number" && typeof b == "number") switch (tree.tkn.token) {
             case "^": return a ** b;
             case "*": return a * b;
@@ -460,14 +472,14 @@ function equivalent(a, b) {
     if (a.tkn.type == "func") return equivalent(a.l, b.l);
     // if (t == '+') return (equivalent(a.l, b.l) && equivalent(a.r, b.r)) || (equivalent(a.r, b.l) && equivalent(a.l, b.r));
 }
-const tree = toast(tokenize("2+x"));
-// console.log(toast(tokenize("x2y^2")).factor().map(e=>e.log).join('\n'))
-// let sum = tree.collectSum().map(e => e.factor());
+const tree = toast(tokenize("3/2x"));
 // console.log(...toast(tokenize("2/x")).factor())
-console.log(tree.print())
-console.log("\n\n"+combineLikeTerms(tree).print());
-// console.log(equivalent(...["x","x+0"].map(e=>toast(tokenize(e)))));
+// console.log(tree.print())
+console.log(tree.numDeriv(0,'x'))
 
+/*SAFE AT
+ * 692fd78b5cb2e296810b18746e0a4063ecf6691e
+ */
 /***TODO
  *  - add args to calc()
  *  - add trig identities, sin(a+b), tan^-1(cos), etc. to AST.simplify()
